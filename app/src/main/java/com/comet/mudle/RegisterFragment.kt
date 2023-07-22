@@ -32,19 +32,20 @@ class RegisterFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         Toast.makeText(context, getString(R.string.register), Toast.LENGTH_SHORT).show()
-        val viewModel = RegisterViewModel(requireContext().getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE))
         val binding = DataBindingUtil.inflate<RegisterMainBinding>(inflater, R.layout.register_main, container, false)
-        viewModel.liveData.observe(viewLifecycleOwner) {
-            binding.error.text = it
-            binding.error.visibility = View.VISIBLE
+        binding.viewModel = RegisterViewModel(requireContext().getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE)).apply {
+            liveData.observe(viewLifecycleOwner) {
+                binding.error.text = it
+                binding.error.visibility = View.VISIBLE
+            }
+            binding.button.setOnClickListener {
+                val name = binding.name.text.toString()
+                //viewmodel에 생성자 붙여놓고 nullable..
+                if (register(name))
+                    callback?.switchMain()
+            }
         }
-        binding.button.setOnClickListener {
-            binding.error.visibility = View.INVISIBLE
-            val name = binding.name.text.toString()
-            //viewmodel에 생성자 붙여놓고 nullable..
-            if (viewModel.register(name))
-                callback?.switchMain()
-        }
+
         return binding.root
     }
 }

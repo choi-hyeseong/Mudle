@@ -25,7 +25,7 @@ class RegisterViewModel(preferences: SharedPreferences) : ViewModel() {
             liveData.value = "이름은 공백으로 지을 수 없습니다."
             return false
         }
-        else if (name == "System") {
+        else if (name.equals("System", true)) {
             liveData.value = "해당 닉네임은 사용할 수 없습니다."
             return false
         }
