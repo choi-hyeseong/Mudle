@@ -20,110 +20,36 @@ import com.comet.mudle.dao.PrefUserDao
 import com.comet.mudle.dao.UserDao
 import com.comet.mudle.model.Chat
 import com.comet.mudle.model.User
+import com.comet.mudle.viewmodel.MainViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import java.util.UUID
 
 
-class MainActivity : AppCompatActivity(), ActivityCallback {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val view = findViewById<YouTubePlayerView>(R.id.youtube)
-        val text = findViewById<TextView>(R.id.main)
-        lifecycle.addObserver(view)
-        val userDao = PrefUserDao(getPreferences(MODE_PRIVATE))
-        view.apply {
-            addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                //추상클래스는 람다로 못바꿈
-                override fun onReady(youTubePlayer: YouTubePlayer) {
-                    youTubePlayer.loadVideo("6ZUIwj3FgUY", 0.0f)
-                    text?.text = "재생중"
-                }
-            })
-        }
-        findViewById<ImageView>(R.id.background)?.let {
-            Glide.with(this).load(R.drawable.background).fitCenter().into(it)
-        }
-        val list =listOf(
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지........."),
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지........."),
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지........."),
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지........."),
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지.........")
-        )
-        val adapter = ChatAdapter(list)
-        findViewById<RecyclerView>(R.id.recyclerView).let {
-            it.adapter = adapter
-            it.addItemDecoration(ChatDecoration())
-            it.scrollToPosition(list.size - 1)
-        }
+const val PREFERENCE = "USER"
 
-    }
+class MainActivity : AppCompatActivity(), ActivityCallback {
 
     override fun switchRegister() {
-        TODO("Not yet implemented")
+        //commit을 해줘야됨
+        supportFragmentManager.beginTransaction().replace(R.id.frame, RegisterFragment()).commit()
     }
 
     override fun switchMain() {
         //TODO
-        supportFragmentManager.beginTransaction().addToBackStack(null)
+        supportFragmentManager.beginTransaction().replace(R.id.frame, GameFragment()).commit()
     }
 
-    private inner class ChatHolder(view: View) : RecyclerView.ViewHolder(view) {
-        //실질적 홀더
-        private val sender: TextView = view.findViewById(R.id.sender)
-        private val content: TextView = view.findViewById(R.id.contentText)
-
-        fun bind(chat: Chat) {
-            sender.text = chat.sender
-            content.text = chat.message
-        }
-    }
-
-    private inner class ChatAdapter(val chats: List<Chat>) : RecyclerView.Adapter<ChatHolder>() {
-        //홀더가 사용할 수 있게 설정하는 부분
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatHolder {
-            val view = layoutInflater.inflate(R.layout.layout_chat, parent, false)
-            return ChatHolder(view)
-        }
-
-        override fun getItemCount(): Int {
-            return chats.size
-        }
-
-        override fun onBindViewHolder(holder: ChatHolder, position: Int) {
-            holder.bind(chats[position])
-        }
-
-    }
-
-    private inner class ChatDecoration : RecyclerView.ItemDecoration() {
-
-        private val padding = 10;
-
-        override fun getItemOffsets(
-            outRect: Rect,
-            view: View,
-            parent: RecyclerView,
-            state: RecyclerView.State
-        ) {
-            super.getItemOffsets(outRect, view, parent, state)
-            outRect.top = padding
-            outRect.left = padding
-            outRect.bottom = padding
-            outRect.right = padding
-        }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val viewModel = MainViewModel(getSharedPreferences(PREFERENCE, MODE_PRIVATE))
+        val isRegistered = viewModel.isUserExists()
+        if (isRegistered)
+        //회원가입이 된경우
+            switchMain()
+        else
+            switchRegister()
     }
 }

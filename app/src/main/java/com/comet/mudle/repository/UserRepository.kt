@@ -8,7 +8,7 @@ import com.comet.mudle.model.User
 
 class UserRepository(preferences: SharedPreferences) {
 
-    private val prefUserDao = PrefUserDao(preferences);
+    private val prefUserDao = PrefUserDao(preferences)
 
     fun loadUser() : LiveData<User> {
         return MutableLiveData(prefUserDao.loadUser())
@@ -18,7 +18,7 @@ class UserRepository(preferences: SharedPreferences) {
         prefUserDao.saveUser(user)
     }
 
-    fun existUser() {
-        prefUserDao.userExists()
+    fun existUser() : Boolean {
+        return prefUserDao.userExists()
     }
 }
