@@ -2,7 +2,6 @@ package com.comet.mudle
 
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,21 +11,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.comet.mudle.dao.PrefUserDao
 import com.comet.mudle.model.Chat
-import com.gmail.bishoybasily.stomp.lib.StompClient
+import com.comet.mudle.viewmodel.GameViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import okhttp3.OkHttpClient
 
 class GameFragment : Fragment() {
 
+    private lateinit var recyclerView: RecyclerView
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,6 +34,8 @@ class GameFragment : Fragment() {
         val youtube = view.findViewById<YouTubePlayerView>(R.id.youtube)
         val text = view.findViewById<TextView>(R.id.main)
         val request = view.findViewById<Button>(R.id.request)
+        val sendButton = view.findViewById<Button>(R.id.sendButton)
+        val inputMessage = view.findViewById<EditText>(R.id.messageInput)
         var player: YouTubePlayer? = null
         lifecycle.addObserver(youtube)
         youtube.apply {
@@ -52,29 +51,7 @@ class GameFragment : Fragment() {
         view.findViewById<ImageView>(R.id.background)?.let {
             Glide.with(this).load(R.drawable.background).fitCenter().into(it)
         }
-        val list = listOf(
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지........."),
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지........."),
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지........."),
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지........."),
-            Chat("혜성", "ㅎㅇ"),
-            Chat("시럽", "ㅂㅇ"),
-            Chat("야옹", "대충 엄청나게 긴 메시지.........")
-        )
-        val adapter = ChatAdapter(list)
-        view.findViewById<RecyclerView>(R.id.recyclerView).let {
-            it.adapter = adapter
-            it.addItemDecoration(ChatDecoration())
-            it.scrollToPosition(list.size - 1)
-        }
+
         request.setOnClickListener {
             val edit = EditText(requireContext())
             AlertDialog.Builder(requireContext()).setTitle(getString(R.string.request_title))
@@ -88,28 +65,32 @@ class GameFragment : Fragment() {
                     player?.loadVideo(edit.text.toString(), 0.0f)
                 }.show()
         }
-        Thread {
-            val url = "ws://192.168.219.106:8080/ws"
-            val intervalMillis = 1000L
-            val client = OkHttpClient()
-            val stomp = StompClient(client, intervalMillis).let {
-                it.url = url
-                it
+        val viewModel = ViewModelProvider(this)[GameViewModel::class.java].let {
+            it.chatList.observe(viewLifecycleOwner) { chats ->
+                updateList(chats)
             }
-            val connection = stomp.connect().subscribe {
-                Log.i("asd", "${it.type}")
-            }
-
-            val topic = stomp.join("/sub/message").subscribe {
-                Log.w("asdf", it.toString())
-            }
-
-            stomp.send("/pub/message", "{\"type\":\"SYSTEM\", \"sender\" : \"Snow\", \"content\":\"test\"}").subscribe()
-
-        }.start()
+            it.connect()
+            it
+        }
+        sendButton.setOnClickListener {
+            val message = inputMessage.text.toString().trim()
+            viewModel.send(message)
+            inputMessage.text.clear()
+        }
+        recyclerView =  view.findViewById<RecyclerView>(R.id.recyclerView).apply {
+            addItemDecoration(ChatDecoration())
+            setHasFixedSize(true) //recycler view 크기는 고정, 비싸지 않게
+        }
         return view
     }
 
+    private fun updateList(list: List<Chat>) {
+        val adapter = ChatAdapter(list)
+        recyclerView.let {
+            it.adapter = adapter
+            it.scrollToPosition(list.size - 1)
+        }
+    }
 
     private inner class ChatHolder(view: View) : RecyclerView.ViewHolder(view) {
         //실질적 홀더

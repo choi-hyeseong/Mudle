@@ -89,19 +89,19 @@
     </com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView>
 
     <EditText
-        android:id="@+id/editTextText2"
+        android:id="@+id/messageInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="13"
         android:inputType="text"
         android:text="Name"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintEnd_toStartOf="@+id/sendButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline5" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/sendButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

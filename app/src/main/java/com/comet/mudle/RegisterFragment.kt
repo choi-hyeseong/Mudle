@@ -33,6 +33,7 @@ class RegisterFragment : Fragment() {
     ): View? {
         Toast.makeText(context, getString(R.string.register), Toast.LENGTH_SHORT).show()
         val binding = DataBindingUtil.inflate<RegisterMainBinding>(inflater, R.layout.register_main, container, false)
+        //api 형태로 해서 파라미터 안받게 하기 TODO
         binding.viewModel = RegisterViewModel(requireContext().getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE)).apply {
             liveData.observe(viewLifecycleOwner) {
                 binding.error.text = it
