@@ -37,8 +37,8 @@
         android:layout_height="match_parent"
         android:elevation="2dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constrainedWidth="true"
         app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,8 +47,8 @@
     <ImageView
         android:id="@+id/background"
         android:layout_width="match_parent"
-        android:adjustViewBounds="true"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true" />
 
     <TextView
         android:id="@+id/main"
@@ -83,7 +83,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" >
+        app:layout_constraintVertical_bias="0.0">
 
 
     </com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView>
@@ -111,13 +111,23 @@
         app:layout_constraintTop_toTopOf="@+id/guideline5" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/request"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="30dp"
-        android:textSize="15sp"
         android:text="!"
+        android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginRight="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline6"
+        app:layout_constraintEnd_toStartOf="@+id/coin"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bubble" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

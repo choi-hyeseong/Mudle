@@ -3,4 +3,6 @@
     <string name="register">회원가입을 진행해주세요!</string>
     <string name="register_title">회원가입</string>
     <string name="enter">클릭</string>
+    <string name="request_title">노래 신청</string>
+    <string name="request_button">신청 하기</string>
 </resources>
