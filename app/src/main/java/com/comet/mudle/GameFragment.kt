@@ -2,6 +2,8 @@ package com.comet.mudle
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +27,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 class GameFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var inputMessage : EditText
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,7 +39,8 @@ class GameFragment : Fragment() {
         val text = view.findViewById<TextView>(R.id.main)
         val request = view.findViewById<Button>(R.id.request)
         val sendButton = view.findViewById<Button>(R.id.sendButton)
-        val inputMessage = view.findViewById<EditText>(R.id.messageInput)
+        inputMessage = view.findViewById(R.id.messageInput)
+        val serverStatImage = view.findViewById<ImageView>(R.id.serverStat)
         var player: YouTubePlayer? = null
         lifecycle.addObserver(youtube)
         youtube.apply {
@@ -65,23 +70,49 @@ class GameFragment : Fragment() {
                     player?.loadVideo(edit.text.toString(), 0.0f)
                 }.show()
         }
-        val viewModel = ViewModelProvider(this)[GameViewModel::class.java].let {
+        val viewModel = ViewModelProvider(this)[GameViewModel::class.java].let { it ->
             it.chatList.observe(viewLifecycleOwner) { chats ->
                 updateList(chats)
+            }
+            it.serverStat.observe(viewLifecycleOwner) {serverStatus ->
+                if (serverStatus)
+                    serverStatImage.setImageDrawable(
+                        AppCompatResources.getDrawable(
+                            requireContext(),
+                            R.drawable.server_online
+                        )
+                    )
+                else
+                    serverStatImage.setImageDrawable(
+                        AppCompatResources.getDrawable(
+                            requireContext(),
+                            R.drawable.server_offline
+                        )
+                    )
+
             }
             it.connect()
             it
         }
         sendButton.setOnClickListener {
-            val message = inputMessage.text.toString().trim()
-            viewModel.send(message)
-            inputMessage.text.clear()
+           sendMessage(viewModel)
         }
-        recyclerView =  view.findViewById<RecyclerView>(R.id.recyclerView).apply {
+        inputMessage.setOnKeyListener { view, i, keyEvent ->
+            if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN)
+                sendMessage(viewModel)
+            false
+        }
+        recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView).apply {
             addItemDecoration(ChatDecoration())
             setHasFixedSize(true) //recycler view 크기는 고정, 비싸지 않게
         }
         return view
+    }
+
+    private fun sendMessage(viewModel: GameViewModel) {
+        val message = inputMessage.text.toString().trim()
+        viewModel.send(message)
+        inputMessage.text.clear()
     }
 
     private fun updateList(list: List<Chat>) {

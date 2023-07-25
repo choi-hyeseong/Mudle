@@ -7,6 +7,7 @@ import com.comet.mudle.custom.ListLiveData
 import com.comet.mudle.model.Chat
 import com.comet.mudle.type.MessageType
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
 import io.reactivex.disposables.Disposable
 import okhttp3.OkHttpClient
@@ -15,6 +16,7 @@ import java.util.UUID
 class GameViewModel : ViewModel() {
 
     val chatList : ListLiveData<Chat> = ListLiveData()
+    val serverStat : MutableLiveData<Boolean> = MutableLiveData()
     lateinit var connection : Disposable
     lateinit var topic : Disposable
     lateinit var stompClient: StompClient
@@ -29,6 +31,10 @@ class GameViewModel : ViewModel() {
             }
             connection = stompClient.connect().subscribe {
                 //connection type
+                when (it.type) {
+                    Event.Type.OPENED -> serverStat.postValue(true)
+                    else ->  serverStat.postValue(false)
+                }
                 Log.i("asd", "${it.type}")
             }
 
