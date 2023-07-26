@@ -10,8 +10,8 @@ class UserRepository(preferences: SharedPreferences) {
 
     private val prefUserDao = PrefUserDao(preferences)
 
-    fun loadUser() : LiveData<User> {
-        return MutableLiveData(prefUserDao.loadUser())
+    fun getUser() : User {
+        return prefUserDao.loadUser()
     }
 
     fun saveUser(user: User) {

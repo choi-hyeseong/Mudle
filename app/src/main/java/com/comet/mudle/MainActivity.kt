@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.comet.mudle.callback.ActivityCallback
@@ -26,9 +27,6 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import java.util.UUID
 
-
-const val PREFERENCE = "USER"
-
 class MainActivity : AppCompatActivity(), ActivityCallback {
 
     override fun switchRegister() {
@@ -37,14 +35,13 @@ class MainActivity : AppCompatActivity(), ActivityCallback {
     }
 
     override fun switchMain() {
-        //TODO
         supportFragmentManager.beginTransaction().replace(R.id.frame, GameFragment()).commit()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val viewModel = MainViewModel(getSharedPreferences(PREFERENCE, MODE_PRIVATE))
+        val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         val isRegistered = viewModel.isUserExists()
         if (isRegistered)
         //회원가입이 된경우

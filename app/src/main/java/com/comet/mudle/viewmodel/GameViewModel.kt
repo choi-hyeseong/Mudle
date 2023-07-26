@@ -3,65 +3,45 @@ package com.comet.mudle.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.comet.mudle.DependencyUtil
 import com.comet.mudle.custom.ListLiveData
 import com.comet.mudle.model.Chat
+import com.comet.mudle.repository.UserRepository
 import com.comet.mudle.type.MessageType
+import com.comet.mudle.web.rest.MusicAPI
+import com.comet.mudle.web.stomp.StompManager
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
 import io.reactivex.disposables.Disposable
 import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.UUID
 
 class GameViewModel : ViewModel() {
 
-    val chatList : ListLiveData<Chat> = ListLiveData()
-    val serverStat : MutableLiveData<Boolean> = MutableLiveData()
-    lateinit var connection : Disposable
-    lateinit var topic : Disposable
-    lateinit var stompClient: StompClient
-    fun connect() {
-        Thread {
-            val url = "ws://192.168.219.106:8080/ws"
-            val intervalMillis = 1000L
-            val client = OkHttpClient()
-            stompClient = StompClient(client, intervalMillis).let {
-                it.url = url
-                it
-            }
-            connection = stompClient.connect().subscribe {
-                //connection type
-                when (it.type) {
-                    Event.Type.OPENED -> serverStat.postValue(true)
-                    else ->  serverStat.postValue(false)
-                }
-                Log.i("asd", "${it.type}")
-            }
 
-            topic = stompClient.join("/sub/message").subscribe {
-                //message
-                val mapper = ObjectMapper()
-                //kotlin은 NoArgsConstructor 미지원 -> dataclass에서 설정 필요..ㅅ
-                val chat : Chat = mapper.readValue(it, Chat::class.java)
-                chatList.add(chat)
-            }
-
-        }.start()
-    }
-
-    fun send(message : String) {
-        //subscribe 까지
-        val mapper = ObjectMapper()
-        val chat = Chat(MessageType.USER, UUID.randomUUID(), "test", message)
-        stompClient.send("/pub/message", mapper.writeValueAsString(chat)).subscribe()
-    }
+    private val retrofit = DependencyUtil.retrofit
+    private val musicAPI: MusicAPI by lazy { retrofit.create(MusicAPI::class.java) }
+    val stompManager : StompManager = StompManager(UserRepository(DependencyUtil.preferences))
 
     override fun onCleared() {
         super.onCleared()
-        connection.dispose()
-        topic.dispose()
+        stompManager.close()
     }
 
+    fun request(music: String) {
+        musicAPI.requestMusic(music).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.i("asdf", "success")
+            }
 
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.i("asdf", "fail")
+            }
+        })
+    }
 
 }

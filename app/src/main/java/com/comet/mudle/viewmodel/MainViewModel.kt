@@ -4,11 +4,12 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.comet.mudle.DependencyUtil
 import com.comet.mudle.repository.UserRepository
 
-class MainViewModel(private val preferences: SharedPreferences) : ViewModel() {
+class MainViewModel : ViewModel() {
 
-    private val repository = UserRepository(preferences)
+    private val repository = UserRepository(DependencyUtil.preferences)
 
     fun isUserExists() : Boolean {
         return repository.existUser()

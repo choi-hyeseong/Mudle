@@ -4,7 +4,7 @@ import com.comet.mudle.model.User
 
 interface UserDao {
 
-    fun loadUser() : User?
+    fun loadUser() : User
 
     fun saveUser(user : User)
 

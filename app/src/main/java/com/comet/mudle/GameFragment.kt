@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.comet.mudle.model.Chat
 import com.comet.mudle.viewmodel.GameViewModel
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
@@ -28,6 +29,8 @@ class GameFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var inputMessage : EditText
+    private lateinit var viewModel: GameViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,6 +54,14 @@ class GameFragment : Fragment() {
                     text?.text = "재생중"
                     player = youTubePlayer
                 }
+
+                override fun onStateChange(
+                    youTubePlayer: YouTubePlayer,
+                    state: PlayerConstants.PlayerState
+                ) {
+                    if (state == PlayerConstants.PlayerState.ENDED)
+                        text?.text = "대기중"
+                }
             })
         }
         view.findViewById<ImageView>(R.id.background)?.let {
@@ -67,14 +78,15 @@ class GameFragment : Fragment() {
                         "신청 완료 " + edit.text.toString() + "",
                         Toast.LENGTH_SHORT
                     ).show()
-                    player?.loadVideo(edit.text.toString(), 0.0f)
+                    viewModel.request(edit.text.toString().trim())
                 }.show()
         }
-        val viewModel = ViewModelProvider(this)[GameViewModel::class.java].let { it ->
-            it.chatList.observe(viewLifecycleOwner) { chats ->
+        viewModel = ViewModelProvider(this)[GameViewModel::class.java].let { it ->
+            val stompManager = it.stompManager
+            stompManager.chatLiveData.observe(viewLifecycleOwner) { chats ->
                 updateList(chats)
             }
-            it.serverStat.observe(viewLifecycleOwner) {serverStatus ->
+            stompManager.serverStatLiveData.observe(viewLifecycleOwner) {serverStatus ->
                 if (serverStatus)
                     serverStatImage.setImageDrawable(
                         AppCompatResources.getDrawable(
@@ -91,15 +103,18 @@ class GameFragment : Fragment() {
                     )
 
             }
-            it.connect()
+            stompManager.youtubeRequestLiveData.observe(viewLifecycleOwner) { link ->
+                player?.loadVideo(link, 0.0f)
+            }
+            stompManager.connect()
             it
         }
         sendButton.setOnClickListener {
-           sendMessage(viewModel)
+           sendMessage()
         }
-        inputMessage.setOnKeyListener { view, i, keyEvent ->
+        inputMessage.setOnKeyListener { _, _, keyEvent ->
             if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN)
-                sendMessage(viewModel)
+                sendMessage()
             false
         }
         recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView).apply {
@@ -109,9 +124,9 @@ class GameFragment : Fragment() {
         return view
     }
 
-    private fun sendMessage(viewModel: GameViewModel) {
+    private fun sendMessage() {
         val message = inputMessage.text.toString().trim()
-        viewModel.send(message)
+        viewModel.stompManager.send(message)
         inputMessage.text.clear()
     }
 

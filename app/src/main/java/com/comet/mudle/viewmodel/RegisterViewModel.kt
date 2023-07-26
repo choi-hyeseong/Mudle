@@ -3,13 +3,14 @@ package com.comet.mudle.viewmodel
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.comet.mudle.DependencyUtil
 import com.comet.mudle.model.User
 import com.comet.mudle.repository.UserRepository
 import java.util.UUID
 
-class RegisterViewModel(preferences: SharedPreferences) : ViewModel() {
+class RegisterViewModel() : ViewModel() {
 
-    private val repository = UserRepository(preferences)
+    private val repository = UserRepository(DependencyUtil.preferences)
     val liveData = MutableLiveData<String>()
 
     fun register(name: String): Boolean {
