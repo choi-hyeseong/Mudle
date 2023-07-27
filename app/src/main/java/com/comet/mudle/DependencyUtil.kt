@@ -18,8 +18,8 @@ open class DependencyUtil {
         lateinit var preferences: SharedPreferences
         val retrofit = getRetrofitClient()
 
-        fun injectPreference(application: Application) {
-            preferences = application.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE)
+        fun injectPreference(context: Context) {
+            preferences = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE)
         }
 
         private fun getRetrofitClient(): Retrofit {

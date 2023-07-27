@@ -20,6 +20,7 @@ class StompManager(userRepository: UserRepository) {
     private lateinit var subscribe: Disposable
     private lateinit var stompClient: StompClient
     private val user = userRepository.getUser()
+    private val mapper = ObjectMapper()
     val chatLiveData: ListLiveData<Chat> = ListLiveData()
     val serverStatLiveData: MutableLiveData<Boolean> = MutableLiveData()
     val youtubeRequestLiveData: MutableLiveData<String> = MutableLiveData()
@@ -36,21 +37,16 @@ class StompManager(userRepository: UserRepository) {
             connection = stompClient.connect().subscribe {
                 //connection type
                 when (it.type) {
-                    Event.Type.OPENED -> serverStatLiveData.postValue(true)
-                    else -> serverStatLiveData.postValue(false)
+                    Event.Type.OPENED -> {
+                        serverStatLiveData.postValue(true)
+                        startSubscribe() //open시 재구독 -> 다시 접속해도 메시지 주고 받을 수 있게
+                    }
+                    else -> {
+                        serverStatLiveData.postValue(false)
+                        subscribe.dispose() //구독만 취소 (connection 끊으면 reconnect 안함)
+                    }
                 }
                 Log.i("asd", "${it.type}")
-            }
-
-            subscribe = stompClient.join("/sub/message").subscribe {
-                //message
-                val mapper = ObjectMapper()
-                //kotlin은 NoArgsConstructor 미지원 -> dataclass에서 설정 필요..ㅅ
-                val chat: Chat = mapper.readValue(it, Chat::class.java)
-                if (chat.type == MessageType.REQUEST)
-                    youtubeRequestLiveData.postValue(chat.message)
-                else
-                    chatLiveData.add(chat)
             }
 
         }.start()
@@ -61,6 +57,19 @@ class StompManager(userRepository: UserRepository) {
         val mapper = ObjectMapper()
         val chat = Chat(MessageType.USER, user.uuid, user.name, message)
         stompClient.send("/pub/message", mapper.writeValueAsString(chat)).subscribe()
+    }
+
+    private fun startSubscribe() {
+        subscribe = stompClient.join("/sub/message").subscribe {
+            //message
+
+            //kotlin은 NoArgsConstructor 미지원 -> dataclass에서 설정 필요..ㅅ
+            val chat: Chat = mapper.readValue(it, Chat::class.java)
+            if (chat.type == MessageType.REQUEST)
+                youtubeRequestLiveData.postValue(chat.message)
+            else
+                chatLiveData.add(chat)
+        }
     }
 
     fun close() {

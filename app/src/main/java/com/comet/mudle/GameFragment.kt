@@ -1,5 +1,6 @@
 package com.comet.mudle
 
+import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -19,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.comet.mudle.model.Chat
+import com.comet.mudle.type.MessageType
 import com.comet.mudle.viewmodel.GameViewModel
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -28,14 +31,12 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 class GameFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var inputMessage : EditText
+    private lateinit var inputMessage: EditText
     private lateinit var viewModel: GameViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         // TODO databinding
         val view = inflater.inflate(R.layout.game_main, container, false)
         val youtube = view.findViewById<YouTubePlayerView>(R.id.youtube)
@@ -55,12 +56,14 @@ class GameFragment : Fragment() {
                     player = youTubePlayer
                 }
 
-                override fun onStateChange(
-                    youTubePlayer: YouTubePlayer,
-                    state: PlayerConstants.PlayerState
-                ) {
-                    if (state == PlayerConstants.PlayerState.ENDED)
-                        text?.text = "대기중"
+                override fun onError(youTubePlayer: YouTubePlayer,
+                                     error: PlayerConstants.PlayerError) {
+                    text?.text = "대기중"
+                }
+
+                override fun onStateChange(youTubePlayer: YouTubePlayer,
+                                           state: PlayerConstants.PlayerState) {
+                    if (state == PlayerConstants.PlayerState.ENDED) text?.text = "대기중"
                 }
             })
         }
@@ -74,10 +77,8 @@ class GameFragment : Fragment() {
                 .setView(edit).setIcon(R.drawable.ic_launcher_foreground)
                 .setPositiveButton(R.string.request_button) { _, _ ->
                     Toast.makeText(
-                        requireContext(),
-                        "신청 완료 " + edit.text.toString() + "",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                        requireContext(), "신청 완료 " + edit.text.toString() + "", Toast.LENGTH_SHORT)
+                        .show()
                     viewModel.request(edit.text.toString().trim())
                 }.show()
         }
@@ -86,21 +87,13 @@ class GameFragment : Fragment() {
             stompManager.chatLiveData.observe(viewLifecycleOwner) { chats ->
                 updateList(chats)
             }
-            stompManager.serverStatLiveData.observe(viewLifecycleOwner) {serverStatus ->
-                if (serverStatus)
-                    serverStatImage.setImageDrawable(
-                        AppCompatResources.getDrawable(
-                            requireContext(),
-                            R.drawable.server_online
-                        )
-                    )
-                else
-                    serverStatImage.setImageDrawable(
-                        AppCompatResources.getDrawable(
-                            requireContext(),
-                            R.drawable.server_offline
-                        )
-                    )
+            stompManager.serverStatLiveData.observe(viewLifecycleOwner) { serverStatus ->
+                if (serverStatus) serverStatImage.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        requireContext(), R.drawable.server_online))
+                else serverStatImage.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        requireContext(), R.drawable.server_offline))
 
             }
             stompManager.youtubeRequestLiveData.observe(viewLifecycleOwner) { link ->
@@ -110,12 +103,11 @@ class GameFragment : Fragment() {
             it
         }
         sendButton.setOnClickListener {
-           sendMessage()
+            sendMessage()
         }
         inputMessage.setOnKeyListener { _, _, keyEvent ->
-            if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN)
-                sendMessage()
-            false
+            if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN) sendMessage()
+            true
         }
         recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView).apply {
             addItemDecoration(ChatDecoration())
@@ -142,10 +134,17 @@ class GameFragment : Fragment() {
         //실질적 홀더
         private val sender: TextView = view.findViewById(R.id.sender)
         private val content: TextView = view.findViewById(R.id.contentText)
+        private val layout : LinearLayout = view.findViewById(R.id.bubble_background)
 
         fun bind(chat: Chat) {
             sender.text = chat.sender
             content.text = chat.message
+            if (chat.type == MessageType.ALERT) {
+                layout.background =
+                    AppCompatResources.getDrawable(requireContext(), R.drawable.bubble_system)
+                sender.setTextColor(Color.WHITE)
+                content.setTextColor(Color.WHITE)
+            }
         }
     }
 
@@ -170,12 +169,10 @@ class GameFragment : Fragment() {
 
         private val padding = 10;
 
-        override fun getItemOffsets(
-            outRect: Rect,
-            view: View,
-            parent: RecyclerView,
-            state: RecyclerView.State
-        ) {
+        override fun getItemOffsets(outRect: Rect,
+                                    view: View,
+                                    parent: RecyclerView,
+                                    state: RecyclerView.State) {
             super.getItemOffsets(outRect, view, parent, state)
             outRect.top = padding
             outRect.left = padding

@@ -21,7 +21,7 @@ class RegisterViewModel() : ViewModel() {
         return false
     }
 
-    private fun checkValidInput(name: String?): Boolean {
+    fun checkValidInput(name: String?): Boolean {
         if (name.isNullOrEmpty()) {
             liveData.value = "이름은 공백으로 지을 수 없습니다."
             return false
