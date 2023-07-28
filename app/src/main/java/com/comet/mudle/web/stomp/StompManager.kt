@@ -4,9 +4,11 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.comet.mudle.custom.ListLiveData
 import com.comet.mudle.model.Chat
+import com.comet.mudle.model.Music
 import com.comet.mudle.model.User
 import com.comet.mudle.repository.UserRepository
 import com.comet.mudle.type.MessageType
+import com.comet.mudle.viewmodel.GameViewModel
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
@@ -14,7 +16,7 @@ import io.reactivex.disposables.Disposable
 import okhttp3.OkHttpClient
 import java.util.UUID
 
-class StompManager(userRepository: UserRepository) {
+class StompManager(userRepository: UserRepository, private val gameViewModel: GameViewModel) {
 
     private lateinit var connection: Disposable
     private lateinit var subscribe: Disposable
@@ -23,7 +25,7 @@ class StompManager(userRepository: UserRepository) {
     private val mapper = ObjectMapper()
     val chatLiveData: ListLiveData<Chat> = ListLiveData()
     val serverStatLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    val youtubeRequestLiveData: MutableLiveData<String> = MutableLiveData()
+
 
     fun connect() {
         Thread {
@@ -38,6 +40,7 @@ class StompManager(userRepository: UserRepository) {
                 //connection type
                 when (it.type) {
                     Event.Type.OPENED -> {
+                        gameViewModel.getMusic()
                         serverStatLiveData.postValue(true)
                         startSubscribe() //open시 재구독 -> 다시 접속해도 메시지 주고 받을 수 있게
                     }
@@ -66,7 +69,8 @@ class StompManager(userRepository: UserRepository) {
             //kotlin은 NoArgsConstructor 미지원 -> dataclass에서 설정 필요..ㅅ
             val chat: Chat = mapper.readValue(it, Chat::class.java)
             if (chat.type == MessageType.REQUEST)
-                youtubeRequestLiveData.postValue(chat.message)
+                //나중에 TODO
+                gameViewModel.musicLiveData.postValue(Music(chat.message, System.currentTimeMillis(), true))
             else
                 chatLiveData.add(chat)
         }

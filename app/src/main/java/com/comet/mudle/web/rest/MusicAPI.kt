@@ -1,6 +1,8 @@
 package com.comet.mudle.web.rest
 
 import com.comet.mudle.web.rest.dto.UserDTO
+import com.comet.mudle.web.rest.response.MusicResponse
+import com.comet.mudle.web.rest.response.MusicResponseDTO
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -16,4 +18,7 @@ interface MusicAPI {
     //TODO
     @POST("/register")
     fun register(@Body userDTO: UserDTO) : Call<Void>
+
+    @GET("/music")
+    fun getMusic() : Call<MusicResponse>
 }
