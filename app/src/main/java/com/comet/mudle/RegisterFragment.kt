@@ -43,17 +43,17 @@ class RegisterFragment : Fragment() {
             binding.button.setOnClickListener {
                 val name = binding.name.text.toString()
                 //viewmodel에 생성자 붙여놓고 nullable..
-                register(name)
+                register(name)?.observe(viewLifecycleOwner)  { isSuccess ->
+                    if (isSuccess)
+                        callback?.switchMain()
+                }
             }
             responseLiveData.observe(viewLifecycleOwner) {
                 //response toast
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
 
-            registerLiveData.observe(viewLifecycleOwner) { isSuccess ->
-                if (isSuccess)
-                    callback?.switchMain()
-            }
+
         }
 
         return binding.root

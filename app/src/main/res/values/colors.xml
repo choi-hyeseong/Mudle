@@ -3,4 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FF0000</color>
+    <color name="colorPrimary">#333333</color> <!-- Black -->
+    <color name="colorPrimaryDark">#4B4B4B</color> <!-- Dark Gray -->
+    <color name="colorAccent">#808080</color> <!-- Medium Gray -->
 </resources>

@@ -1,10 +1,12 @@
 package com.comet.mudle.web.rest
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.comet.mudle.DependencyUtil
 import com.comet.mudle.model.Music
-import com.comet.mudle.web.rest.dto.UserDTO
+import com.comet.mudle.model.ServerUser
+import com.comet.mudle.web.rest.dto.UserRequestDTO
 import com.comet.mudle.web.rest.dto.UserResponseDTO
 import com.comet.mudle.web.rest.response.MusicResponseDTO
 import com.comet.mudle.web.rest.response.ObjectResponse
@@ -14,14 +16,14 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.UUID
 
-class MusicAPIManager {
+class MudleAPIManager {
 
     private val retrofit = DependencyUtil.retrofit
-    private val musicAPI: MusicAPI by lazy { retrofit.create(MusicAPI::class.java) }
-    val userLiveData = MutableLiveData<UserResponseDTO>() //유저 응답값 저장후 코인 갱신 등등..
+    private val musicAPI: MudleAPI by lazy { retrofit.create(MudleAPI::class.java) }
+    private val userAPI : MudleUserAPI by lazy { retrofit.create(MudleUserAPI::class.java) }
+    val userLiveData = MutableLiveData<ServerUser>() //유저 응답값 저장후 코인 갱신 등등..
     val musicLiveData = MutableLiveData<Music>()
     val webResponse = MutableLiveData<String>()
-    val registerResponse = MutableLiveData<Boolean>()
 
     fun request(music: String) {
         musicAPI.requestMusic(music).enqueue(object : Callback<Void> {
@@ -36,10 +38,10 @@ class MusicAPIManager {
     }
 
     fun getUser(uuid: UUID) {
-        musicAPI.user(uuid).enqueue(object : Callback<ObjectResponse<UserResponseDTO>> {
+        userAPI.user(uuid).enqueue(object : Callback<ObjectResponse<UserResponseDTO>> {
             override fun onResponse(call: Call<ObjectResponse<UserResponseDTO>>, response: Response<ObjectResponse<UserResponseDTO>>) {
                 Log.i("asdf", "success")
-                userLiveData.postValue(response.body()?.content)
+                userLiveData.postValue(response.body()?.content?.let { ServerUser(it) })
             }
 
             override fun onFailure(call: Call<ObjectResponse<UserResponseDTO>>, t: Throwable) {
@@ -55,7 +57,7 @@ class MusicAPIManager {
                 Log.i("asdf", "success")
                 Log.i("asdf", response.body()?.content.toString())
                 response.body()?.let {
-                    musicLiveData.postValue(Music(it.content))
+                    postMusicLiveData(Music(it.content))
                 }
 
             }
@@ -66,19 +68,27 @@ class MusicAPIManager {
         })
     }
 
-    fun register(name : String, uuid: UUID) {
-        musicAPI.register(UserDTO(name, uuid)).enqueue(object : Callback<DefaultResponse> {
+    fun postMusicLiveData(music : Music) {
+        musicLiveData.postValue(music)
+    }
+
+    //livedata를 return하게 해서 필요할때 사용할 수 있게.
+    //서버 response를 livedata에 띄워주는것도 괜찮을듯?
+    fun register(name : String, uuid: UUID) : LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        userAPI.register(UserRequestDTO(name, uuid)).enqueue(object : Callback<DefaultResponse> {
             override fun onResponse(call: Call<DefaultResponse>, response: Response<DefaultResponse>) {
                 Log.w("mudle.log", response.toString())
                 webResponse.postValue("회원가입이 성공하였습니다.")
-                registerResponse.postValue(true)
+                result.postValue(true)
             }
 
             override fun onFailure(call: Call<DefaultResponse>, t: Throwable) {
-                registerResponse.postValue(false)
                 webResponse.postValue("an error occurred..")
                 t.message?.let { Log.w("mudle.log", it) }
+                result.postValue(false)
             }
         })
+        return result
     }
 }

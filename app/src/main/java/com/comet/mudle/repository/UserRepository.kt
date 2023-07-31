@@ -1,21 +1,19 @@
 package com.comet.mudle.repository
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.comet.mudle.dao.PrefUserDao
-import com.comet.mudle.model.User
+import com.comet.mudle.model.LocalUser
 
 class UserRepository(preferences: SharedPreferences) {
 
     private val prefUserDao = PrefUserDao(preferences)
 
-    fun getUser() : User {
+    fun getUser() : LocalUser {
         return prefUserDao.loadUser()
     }
 
-    fun saveUser(user: User) {
-        prefUserDao.saveUser(user)
+    fun saveUser(localUser: LocalUser) {
+        prefUserDao.saveUser(localUser)
     }
 
     fun existUser() : Boolean {

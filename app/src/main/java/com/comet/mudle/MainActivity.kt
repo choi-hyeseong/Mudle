@@ -1,31 +1,10 @@
 package com.comet.mudle
 
-import android.content.Context
-import android.graphics.Color
-import android.graphics.Rect
-import android.media.AudioAttributes
-import android.media.AudioManager
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.comet.mudle.callback.ActivityCallback
-import com.comet.mudle.dao.PrefUserDao
-import com.comet.mudle.dao.UserDao
-import com.comet.mudle.model.Chat
-import com.comet.mudle.model.User
 import com.comet.mudle.viewmodel.MainViewModel
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import java.util.UUID
 
 class MainActivity : AppCompatActivity(), ActivityCallback {
 

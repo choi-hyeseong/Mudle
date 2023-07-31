@@ -3,35 +3,24 @@ package com.comet.mudle.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.comet.mudle.DependencyUtil
-import com.comet.mudle.callback.APICallback
 import com.comet.mudle.model.Music
+import com.comet.mudle.model.ServerUser
 import com.comet.mudle.repository.UserRepository
-import com.comet.mudle.web.rest.MusicAPIManager
+import com.comet.mudle.web.rest.MudleAPIManager
+import com.comet.mudle.web.rest.dto.UserResponseDTO
 import com.comet.mudle.web.stomp.StompManager
-import java.util.UUID
 
-class GameViewModel : ViewModel(), APICallback {
+class GameViewModel : ViewModel() {
 
-    private val musicAPIManager : MusicAPIManager = MusicAPIManager()
-    private val responseLiveData = musicAPIManager.webResponse
-    val musicLiveData: MutableLiveData<Music> = musicAPIManager.musicLiveData
-    val stompManager : StompManager = StompManager(UserRepository(DependencyUtil.preferences), this)
-    val userLiveData = musicAPIManager.userLiveData
+    private val mudleAPIManager: MudleAPIManager = MudleAPIManager()
+    val stompManager: StompManager =
+        StompManager(UserRepository(DependencyUtil.preferences), mudleAPIManager)
+    val userLiveData: MutableLiveData<ServerUser> = mudleAPIManager.userLiveData
+    val musicLiveData: MutableLiveData<Music> = mudleAPIManager.musicLiveData
+    val responseLiveData: MutableLiveData<String> = mudleAPIManager.webResponse
 
-    override fun request(music : String) {
-        musicAPIManager.request(music)
-    }
-
-    override fun getMusic() {
-        musicAPIManager.getMusic()
-    }
-
-    override fun getUser(uuid: UUID) {
-        musicAPIManager.getUser(uuid)
-    }
-
-    override fun setMusic(music: Music) {
-        musicLiveData.postValue(music)
+    fun request(music: String) {
+        mudleAPIManager.request(music)
     }
 
     override fun onCleared() {

@@ -1,12 +1,12 @@
 package com.comet.mudle.dao
 
-import com.comet.mudle.model.User
+import com.comet.mudle.model.LocalUser
 
 interface UserDao {
 
-    fun loadUser() : User
+    fun loadUser() : LocalUser
 
-    fun saveUser(user : User)
+    fun saveUser(localUser : LocalUser)
 
     fun userExists() : Boolean
 }

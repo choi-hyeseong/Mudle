@@ -1,22 +1,22 @@
 package com.comet.mudle.dao
 
 import android.content.SharedPreferences
-import com.comet.mudle.model.User
+import com.comet.mudle.model.LocalUser
 import java.util.UUID
 
 class PrefUserDao(private val preferences: SharedPreferences) : UserDao {
 
     //Exist 체크 후 요청바람.
-    override fun loadUser(): User {
+    override fun loadUser(): LocalUser {
         val name : String = preferences.getString("name", "null")!!
         val uuid : UUID = preferences.getString("uuid", UUID.randomUUID().toString())?.run {
             UUID.fromString(this)
         }!!
-        return User(name, uuid)
+        return LocalUser(name, uuid)
     }
 
-    override fun saveUser(user: User) {
-        preferences.edit().putString("name", user.name).putString("uuid", user.uuid.toString()).commit()
+    override fun saveUser(localUser: LocalUser) {
+        preferences.edit().putString("name", localUser.name).putString("uuid", localUser.uuid.toString()).commit()
     }
 
     override fun userExists(): Boolean {
