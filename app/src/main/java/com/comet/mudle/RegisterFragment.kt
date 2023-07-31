@@ -31,20 +31,27 @@ class RegisterFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         Toast.makeText(context, getString(R.string.register), Toast.LENGTH_SHORT).show()
         val binding = DataBindingUtil.inflate<RegisterMainBinding>(inflater, R.layout.register_main, container, false)
         //api 형태로 해서 파라미터 안받게 하기 TODO
         binding.viewModel = ViewModelProvider(this)[RegisterViewModel::class.java].apply {
-            liveData.observe(viewLifecycleOwner) {
+            validLiveData.observe(viewLifecycleOwner) {
                 binding.error.text = it
                 binding.error.visibility = View.VISIBLE
             }
             binding.button.setOnClickListener {
                 val name = binding.name.text.toString()
                 //viewmodel에 생성자 붙여놓고 nullable..
-                //TODO livedata
-                if (register(name))
+                register(name)
+            }
+            responseLiveData.observe(viewLifecycleOwner) {
+                //response toast
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
+
+            registerLiveData.observe(viewLifecycleOwner) { isSuccess ->
+                if (isSuccess)
                     callback?.switchMain()
             }
         }

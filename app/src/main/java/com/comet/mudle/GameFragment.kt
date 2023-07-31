@@ -63,8 +63,17 @@ class GameFragment : Fragment() {
                 loadVideo(music)
 
             }
+
+            //user observe
+            userLiveData.observe(viewLifecycleOwner) { user ->
+                binding.coin.text = "${user.coin} COIN"
+            }
+
             stompManager.connect()
         }
+
+        // lateinit
+        inputMessage = binding.messageInput
         viewModel = binding.viewModel!!
 
         // Youtube init
