@@ -36,6 +36,7 @@ class GameFragment : Fragment() {
     //왜 DataBinding해놓고  lateinit을 하느냐 -> Binding lateinit 할당시 Memory leak 문제가 발생할 수 있음
     /*
     binding in fragments could lead to memory leaks, if they aren't set to null in onDestroyView. That's why we set _binding to null in onDestroyView
+    그래서 lazy써서.. viewmodel 참조 가지고.. lifecycle leak 안날라나 모르겠다. 필요시 on destroy에서 null refer하면 될듯?
      */
     private lateinit var recyclerView: RecyclerView
     private lateinit var inputMessage: EditText
@@ -43,7 +44,12 @@ class GameFragment : Fragment() {
     private lateinit var playStatusText: TextView
     private lateinit var serverStatImage : ImageView
     private lateinit var coinText : TextView
+    //viewmodel init
+    private val viewModel: GameViewModel by lazy {
+        ViewModelProvider(this)[GameViewModel::class.java]
+    }
     private var currentMusic: Music? = null
+
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -54,8 +60,7 @@ class GameFragment : Fragment() {
         val binding =
             DataBindingUtil.inflate<GameMainBinding>(inflater, R.layout.game_main, container, false)
 
-        //viewmodel init
-        val viewModel: GameViewModel = ViewModelProvider(this)[GameViewModel::class.java]
+
 
         initLiveData(viewModel)
 
@@ -96,6 +101,11 @@ class GameFragment : Fragment() {
         binding.viewModel?.let { it.stompManager.connect() }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getMusic()
     }
 
     private fun setRequestButtonListener(viewModel : GameViewModel) {
@@ -188,9 +198,10 @@ class GameFragment : Fragment() {
     }
 
     private fun loadVideo(music: Music) {
+        Log.i("log"," ${music.currentTime}")
         if (::player.isInitialized)
             player.loadVideo(
                 music.link,
-                ((System.currentTimeMillis() - music.startTime) / 1000).toFloat())
+                music.currentTime.toFloat())
     }
 }

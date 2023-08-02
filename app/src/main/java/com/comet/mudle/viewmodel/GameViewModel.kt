@@ -26,6 +26,10 @@ class GameViewModel : ViewModel() {
         mudleAPIManager.request(user.uuid, url)
     }
 
+    fun getMusic() {
+        mudleAPIManager.getMusic()
+    }
+
     override fun onCleared() {
         super.onCleared()
         stompManager.close()

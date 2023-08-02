@@ -76,7 +76,7 @@ class StompManager(userRepository: UserRepository, private val apiManager
             else if (chat.type == MessageType.UPDATE && UUID.fromString(chat.message)
                     .equals(user.uuid))
                 apiManager.getUser(user.uuid) //유저 업데이트
-            else
+            else if (chat.type == MessageType.USER || chat.type == MessageType.ALERT)
                 chatLiveData.add(chat)
         }
     }
