@@ -13,7 +13,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.marginLeft
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -25,7 +24,7 @@ import com.comet.mudle.model.Music
 import com.comet.mudle.recycler.ChatAdapter
 import com.comet.mudle.recycler.ChatDecoration
 import com.comet.mudle.viewmodel.GameViewModel
-import com.comet.mudle.web.stomp.StompManager
+import com.comet.mudle.web.stomp.StompUseCase
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -84,11 +83,11 @@ class GameFragment : Fragment() {
         }
 
         binding.sendButton.setOnClickListener {
-            sendMessage(viewModel.stompManager)
+            sendMessage(viewModel.stompUseCase)
         }
 
         binding.messageInput.setOnKeyListener { _, _, keyEvent ->
-            if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN) sendMessage(viewModel.stompManager)
+            if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN) sendMessage(viewModel.stompUseCase)
             true
         }
 
@@ -98,14 +97,14 @@ class GameFragment : Fragment() {
         }
 
         //connect
-        binding.viewModel?.let { it.stompManager.connect() }
+        binding.viewModel?.let { it.stompUseCase.connect() }
 
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.getMusic()
+        viewModel.renewMusic()
     }
 
     private fun setRequestButtonListener(viewModel : GameViewModel) {
@@ -153,10 +152,10 @@ class GameFragment : Fragment() {
 
     private fun initLiveData(viewModel: GameViewModel) {
         viewModel.apply {
-            stompManager.chatLiveData.observe(viewLifecycleOwner) { chats ->
+            stompUseCase.chatLiveData.observe(viewLifecycleOwner) { chats ->
                 updateList(chats)
             }
-            stompManager.serverStatLiveData.observe(viewLifecycleOwner) { serverStatus ->
+            stompUseCase.serverStatLiveData.observe(viewLifecycleOwner) { serverStatus ->
                 if (serverStatus) serverStatImage.setImageDrawable(
                     AppCompatResources.getDrawable(
                         requireContext(), R.drawable.server_online))
@@ -171,21 +170,26 @@ class GameFragment : Fragment() {
                 loadVideo(music)
             }
 
-            responseLiveData.observe(viewLifecycleOwner) { response ->
+            musicResponseLiveData.observe(viewLifecycleOwner) { response ->
+                Toast.makeText(requireContext(), response, Toast.LENGTH_SHORT).show()
+            }
+
+            userResponseLiveData.observe(viewLifecycleOwner) { response ->
                 Toast.makeText(requireContext(), response, Toast.LENGTH_SHORT).show()
             }
 
             //user observe
             userLiveData.observe(viewLifecycleOwner) { user ->
+                Log.w("adsf", "call user update")
                 //getString format 사용하기
                 coinText.text = getString(R.string.coin_format, user.coin)
             }
         }
     }
 
-    private fun sendMessage(stompManager: StompManager) {
+    private fun sendMessage(stompUseCase: StompUseCase) {
         val message = inputMessage.text.toString().trim()
-        stompManager.send(message)
+        stompUseCase.send(message)
         inputMessage.text.clear()
     }
 

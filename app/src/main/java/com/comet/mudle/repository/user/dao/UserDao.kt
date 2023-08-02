@@ -1,4 +1,4 @@
-package com.comet.mudle.dao
+package com.comet.mudle.repository.user.dao
 
 import com.comet.mudle.model.LocalUser
 

@@ -1,4 +1,4 @@
-package com.comet.mudle.dao
+package com.comet.mudle.repository.user.dao
 
 import android.content.SharedPreferences
 import com.comet.mudle.model.LocalUser

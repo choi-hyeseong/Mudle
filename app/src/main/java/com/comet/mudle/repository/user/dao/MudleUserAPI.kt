@@ -1,4 +1,4 @@
-package com.comet.mudle.web.rest
+package com.comet.mudle.repository.user.dao
 
 import com.comet.mudle.web.rest.dto.UserRequestDTO
 import com.comet.mudle.web.rest.dto.UserResponseDTO

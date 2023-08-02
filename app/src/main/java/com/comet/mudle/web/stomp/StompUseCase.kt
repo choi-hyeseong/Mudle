@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.comet.mudle.custom.ListLiveData
 import com.comet.mudle.model.Chat
-import com.comet.mudle.model.Music
-import com.comet.mudle.repository.UserRepository
 import com.comet.mudle.type.MessageType
-import com.comet.mudle.web.rest.MudleAPIManager
+import com.comet.mudle.usecase.MudleLocalUserCase
+import com.comet.mudle.usecase.MudleMusicCase
+import com.comet.mudle.usecase.MudleUserCase
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
@@ -15,13 +15,13 @@ import io.reactivex.disposables.Disposable
 import okhttp3.OkHttpClient
 import java.util.UUID
 
-class StompManager(userRepository: UserRepository, private val apiManager
-: MudleAPIManager) {
+class StompUseCase(localUserCase: MudleLocalUserCase, private val musicUseCase
+: MudleMusicCase, private val userCase: MudleUserCase) {
 
     private lateinit var connection: Disposable
     private lateinit var subscribe: Disposable
     private lateinit var stompClient: StompClient
-    private val user = userRepository.getUser()
+    private val user = localUserCase.getUser()
     private val mapper = ObjectMapper()
     val chatLiveData: ListLiveData<Chat> = ListLiveData()
     val serverStatLiveData: MutableLiveData<Boolean> = MutableLiveData()
@@ -40,8 +40,8 @@ class StompManager(userRepository: UserRepository, private val apiManager
                 //connection type
                 when (it.type) {
                     Event.Type.OPENED -> {
-                        apiManager.getUser(user.uuid)
-                        apiManager.getMusic()
+                        userCase.renewUser(user.uuid)
+                        musicUseCase.renewMusic()
                         serverStatLiveData.postValue(true)
                         startSubscribe() //open시 재구독 -> 다시 접속해도 메시지 주고 받을 수 있게
                     }
@@ -72,10 +72,10 @@ class StompManager(userRepository: UserRepository, private val apiManager
             //kotlin은 NoArgsConstructor 미지원 -> dataclass에서 설정 필요..ㅅ
             val chat: Chat = mapper.readValue(it, Chat::class.java)
             if (chat.type == MessageType.REQUEST)
-                apiManager.getMusic()
+                musicUseCase.renewMusic()
             else if (chat.type == MessageType.UPDATE && UUID.fromString(chat.message)
                     .equals(user.uuid))
-                apiManager.getUser(user.uuid) //유저 업데이트
+                userCase.renewUser(user.uuid) //유저 업데이트
             else if (chat.type == MessageType.USER || chat.type == MessageType.ALERT)
                 chatLiveData.add(chat)
         }
