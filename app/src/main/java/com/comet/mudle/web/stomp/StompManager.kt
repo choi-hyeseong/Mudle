@@ -61,7 +61,7 @@ class StompManager(userRepository: UserRepository, private val apiManager
     fun send(message: String) {
         //subscribe 까지
         val mapper = ObjectMapper()
-        val chat = Chat(MessageType.USER, user.uuid, user.name, message)
+        val chat = Chat(MessageType.USER, user.uuid, user.name, message, System.currentTimeMillis())
         stompClient.send("/pub/message", mapper.writeValueAsString(chat)).subscribe()
     }
 
@@ -72,7 +72,7 @@ class StompManager(userRepository: UserRepository, private val apiManager
             //kotlin은 NoArgsConstructor 미지원 -> dataclass에서 설정 필요..ㅅ
             val chat: Chat = mapper.readValue(it, Chat::class.java)
             if (chat.type == MessageType.REQUEST)
-                apiManager.postMusicLiveData(Music(chat.message, System.currentTimeMillis(), true))
+                apiManager.getMusic()
             else if (chat.type == MessageType.UPDATE && UUID.fromString(chat.message)
                     .equals(user.uuid))
                 apiManager.getUser(user.uuid) //유저 업데이트

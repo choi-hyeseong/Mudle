@@ -9,5 +9,6 @@ data class Chat @JsonCreator constructor(
     @JsonProperty("type") val type: MessageType,
     @JsonProperty("uuid") val uuid: UUID,
     @JsonProperty("sender") val sender: String,
-    @JsonProperty("message") val message: String
+    @JsonProperty("message") val message: String,
+    @JsonProperty("timeStamp") val timeStamp : Long
 )

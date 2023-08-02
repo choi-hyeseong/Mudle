@@ -1,6 +1,7 @@
 package com.comet.mudle
 
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.marginLeft
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -97,15 +99,14 @@ class GameFragment : Fragment() {
     }
 
     private fun setRequestButtonListener(viewModel : GameViewModel) {
-        val edit = EditText(requireContext())
+        val edit = EditText(requireContext()).apply {
+            inputType = InputType.TYPE_CLASS_TEXT
+        }
         AlertDialog.Builder(requireContext()).apply {
             setTitle(getString(R.string.request_title))
             setView(edit)
-            setIcon(R.drawable.ic_launcher_foreground)
+            setIcon(R.drawable.music)
             setPositiveButton(R.string.request_button) { _, _ ->
-                Toast.makeText(
-                    requireContext(), "신청 완료 " + edit.text.toString() + "", Toast.LENGTH_SHORT)
-                    .show()
                 viewModel.request(edit.text.toString().trim())
             }
             setNegativeButton(getString(R.string.request_deny)) { dialog, _ ->
