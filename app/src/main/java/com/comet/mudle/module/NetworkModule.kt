@@ -1,9 +1,5 @@
 package com.comet.mudle.module
 
-import android.content.Context
-import android.content.SharedPreferences
-import com.comet.mudle.PREFERENCE
-import com.comet.mudle.URL
 import com.comet.mudle.repository.user.dao.MudleMusicAPI
 import com.comet.mudle.repository.user.dao.MudleUserAPI
 import dagger.Module

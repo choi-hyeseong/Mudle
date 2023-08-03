@@ -25,6 +25,6 @@ class DaoModule {
     @Provides
     @Singleton
     fun provideSharedPreference(@ApplicationContext context: Context): SharedPreferences {
-        return context.getSharedPreferences(com.comet.mudle.PREFERENCE, Context.MODE_PRIVATE)
+        return context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE)
     }
 }
