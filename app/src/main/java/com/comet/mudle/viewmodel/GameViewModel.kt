@@ -2,6 +2,8 @@ package com.comet.mudle.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import com.comet.mudle.custom.ListLiveData
+import com.comet.mudle.model.Chat
 import com.comet.mudle.model.LocalUser
 import com.comet.mudle.model.Music
 import com.comet.mudle.model.ServerUser
@@ -9,26 +11,38 @@ import com.comet.mudle.service.LocalUserService
 import com.comet.mudle.service.MusicService
 import com.comet.mudle.service.ServerUserService
 import com.comet.mudle.web.stomp.StompService
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class GameViewModel : ViewModel() {
+//provide 계열엔 inject 안넣어도 됨
+@HiltViewModel
+class GameViewModel @Inject constructor(serverUserService: ServerUserService,
+                                        private val musicService: MusicService,
+                                        localUserService: LocalUserService,
+                                        val stompService: StompService) :
+    ViewModel() {
 
-    private val serverUserService: ServerUserService = ServerUserService()
-    private val musicService: MusicService = MusicService(serverUserService)
-    private val localUserService : LocalUserService = LocalUserService(serverUserService)
     private val user: LocalUser = localUserService.getUser()
-    val stompService: StompService =
-        StompService(localUserService, musicService, serverUserService)
     var userLiveData: LiveData<ServerUser> = serverUserService.getUser(user.uuid)
     val musicLiveData: LiveData<Music> = musicService.getMusic()
     val userResponseLiveData: LiveData<String> = serverUserService.getResponseLiveData()
-    val musicResponseLiveData : LiveData<String> = musicService.getResponseLiveData()
-
+    val musicResponseLiveData: LiveData<String> = musicService.getResponseLiveData()
+    val chatLiveData: ListLiveData<Chat> = stompService.chatLiveData
+    val serverStatLiveData: LiveData<Boolean> = stompService.serverStatLiveData
     fun request(url: String) {
         musicService.request(user.uuid, url)
     }
 
     fun renewMusic() {
         musicService.renewMusic()
+    }
+
+    fun sendMessage(message: String) {
+        stompService.send(message)
+    }
+
+    fun connect() {
+        stompService.connect()
     }
 
     override fun onCleared() {

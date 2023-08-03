@@ -15,8 +15,9 @@ import io.reactivex.disposables.Disposable
 import okhttp3.OkHttpClient
 import java.util.UUID
 
-class StompService(localUserCase: LocalUserService, private val musicUseCase
-: MusicService, private val userCase: ServerUserService) {
+class StompService(private val localUserCase: LocalUserService,
+                   private val userCase: ServerUserService,
+                   private val musicUseCase: MusicService) {
 
     private lateinit var connection: Disposable
     private lateinit var subscribe: Disposable

@@ -1,11 +1,12 @@
 package com.comet.mudle
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class App : Application() {
+@HiltAndroidApp
+class MudleApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        DependencyUtil.injectPreference(this)
     }
 }

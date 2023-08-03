@@ -14,17 +14,18 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
-class MusicRepositoryImpl : MusicRepository {
+class MusicRepositoryImpl(
+    private val musicAPI: MudleMusicAPI
+) : MusicRepository {
 
-    private val retrofit = DependencyUtil.retrofit
-    private val musicAPI: MudleMusicAPI by lazy { retrofit.create(MudleMusicAPI::class.java) }
-    private val musicLiveData : MutableLiveData<Music> = MutableLiveData()
-    private val responseLiveData : MutableLiveData<String> = MutableLiveData()
+    private val musicLiveData: MutableLiveData<Music> = MutableLiveData()
+    private val responseLiveData: MutableLiveData<String> = MutableLiveData()
 
-    override fun getMusic() : LiveData<Music> {
+    override fun getMusic(): LiveData<Music> {
         renewMusic()
         return musicLiveData
     }
@@ -34,17 +35,20 @@ class MusicRepositoryImpl : MusicRepository {
     }
 
     //callback이 왔을때 then이후 처리할 수 있게 future로
-    override fun requestMusic(uuid: UUID, music: String) : CompletableFuture<Boolean> {
-        val result : CompletableFuture<Boolean> = CompletableFuture()
+    override fun requestMusic(uuid: UUID, music: String): CompletableFuture<Boolean> {
+        val result: CompletableFuture<Boolean> = CompletableFuture()
         musicAPI.requestMusic(MusicRequestDTO(uuid, music)).enqueue(object :
             Callback<DefaultResponse> {
-            override fun onResponse(call: Call<DefaultResponse>, response: Response<DefaultResponse>) {
+            override fun onResponse(call: Call<DefaultResponse>,
+                                    response: Response<DefaultResponse>) {
                 if (response.isSuccessful) {
                     responseLiveData.postValue(response.body()?.message)
                     //데이터 갱신
                 }
                 else
-                    responseLiveData.postValue(ObjectMapper().readValue(response.errorBody()?.string(), DefaultResponse::class.java).message)
+                    responseLiveData.postValue(
+                        ObjectMapper().readValue(
+                            response.errorBody()?.string(), DefaultResponse::class.java).message)
                 result.complete(true)
             }
 
@@ -58,7 +62,8 @@ class MusicRepositoryImpl : MusicRepository {
 
     override fun renewMusic() {
         musicAPI.getMusic().enqueue(object : Callback<ObjectResponse<MusicResponseDTO>> {
-            override fun onResponse(call: Call<ObjectResponse<MusicResponseDTO>>, response: Response<ObjectResponse<MusicResponseDTO>>) {
+            override fun onResponse(call: Call<ObjectResponse<MusicResponseDTO>>,
+                                    response: Response<ObjectResponse<MusicResponseDTO>>) {
                 Log.i("asdf", response.body()?.content.toString())
                 response.body()?.let {
                     musicLiveData.postValue(Music(it.content))

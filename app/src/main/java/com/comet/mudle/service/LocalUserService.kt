@@ -4,17 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.comet.mudle.DependencyUtil
 import com.comet.mudle.model.LocalUser
+import com.comet.mudle.repository.ResponseLiveDataHolder
+import com.comet.mudle.repository.user.LocalUserRepository
 import com.comet.mudle.repository.user.LocalUserRepositoryImpl
 import com.comet.mudle.repository.user.dao.PrefUserDao
 import java.util.UUID
 
-class LocalUserService(private val serverUserService: ServerUserService) {
+class LocalUserService(
+    private val serverUserService: ServerUserService,
+    private val repository: LocalUserRepository,
+) : ResponseLiveDataHolder {
 
-    private val repository = LocalUserRepositoryImpl(PrefUserDao(DependencyUtil.preferences))
     val validLiveData = MutableLiveData<String>()
-    val responseLiveData : LiveData<String> = serverUserService.getResponseLiveData()
 
-    fun register(name: String) : LiveData<Boolean> {
+    fun register(name: String): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
         if (checkValidInput(name)) {
             val uuid = UUID.randomUUID()
@@ -28,11 +31,11 @@ class LocalUserService(private val serverUserService: ServerUserService) {
         return repository.existUser()
     }
 
-    fun getUser() : LocalUser {
+    fun getUser(): LocalUser {
         return repository.getUser()
     }
 
-    private fun checkValidInput(name: String?): Boolean {
+    fun checkValidInput(name: String?): Boolean {
         if (name.isNullOrEmpty()) {
             validLiveData.value = "이름은 공백으로 지을 수 없습니다."
             return false
@@ -42,6 +45,10 @@ class LocalUserService(private val serverUserService: ServerUserService) {
             return false
         }
         return true
+    }
+
+    override fun getResponseLiveData(): LiveData<String> {
+        return serverUserService.getResponseLiveData() //생성자 초기화때가 아닌 method로 가져올 수 있게
     }
 
 

@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -24,12 +25,13 @@ import com.comet.mudle.model.Music
 import com.comet.mudle.recycler.ChatAdapter
 import com.comet.mudle.recycler.ChatDecoration
 import com.comet.mudle.viewmodel.GameViewModel
-import com.comet.mudle.web.stomp.StompService
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class GameFragment : Fragment() {
 
     //왜 DataBinding해놓고  lateinit을 하느냐 -> Binding lateinit 할당시 Memory leak 문제가 발생할 수 있음
@@ -44,9 +46,7 @@ class GameFragment : Fragment() {
     private lateinit var serverStatImage : ImageView
     private lateinit var coinText : TextView
     //viewmodel init
-    private val viewModel: GameViewModel by lazy {
-        ViewModelProvider(this)[GameViewModel::class.java]
-    }
+    private val viewModel: GameViewModel by viewModels()
     private var currentMusic: Music? = null
 
 
@@ -83,11 +83,11 @@ class GameFragment : Fragment() {
         }
 
         binding.sendButton.setOnClickListener {
-            sendMessage(viewModel.stompService)
+            sendMessage(viewModel)
         }
 
         binding.messageInput.setOnKeyListener { _, _, keyEvent ->
-            if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN) sendMessage(viewModel.stompService)
+            if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN) sendMessage(viewModel)
             true
         }
 
@@ -97,7 +97,7 @@ class GameFragment : Fragment() {
         }
 
         //connect
-        binding.viewModel?.let { it.stompService.connect() }
+        binding.viewModel?.let { it.connect() }
 
         return binding.root
     }
@@ -152,10 +152,10 @@ class GameFragment : Fragment() {
 
     private fun initLiveData(viewModel: GameViewModel) {
         viewModel.apply {
-            stompService.chatLiveData.observe(viewLifecycleOwner) { chats ->
+            chatLiveData.observe(viewLifecycleOwner) { chats ->
                 updateList(chats)
             }
-            stompService.serverStatLiveData.observe(viewLifecycleOwner) { serverStatus ->
+            serverStatLiveData.observe(viewLifecycleOwner) { serverStatus ->
                 if (serverStatus) serverStatImage.setImageDrawable(
                     AppCompatResources.getDrawable(
                         requireContext(), R.drawable.server_online))
@@ -187,9 +187,9 @@ class GameFragment : Fragment() {
         }
     }
 
-    private fun sendMessage(stompService: StompService) {
+    private fun sendMessage(viewModel: GameViewModel) {
         val message = inputMessage.text.toString().trim()
-        stompService.send(message)
+        viewModel.sendMessage(message)
         inputMessage.text.clear()
     }
 

@@ -6,10 +6,9 @@ import com.comet.mudle.repository.user.ServerUserRepository
 import com.comet.mudle.repository.user.ServerUserRepositoryImpl
 import java.util.UUID
 
-class ServerUserService {
-    //usecase
-    private val serverUserRepository: ServerUserRepository = ServerUserRepositoryImpl()
-
+class ServerUserService(
+    private val serverUserRepository: ServerUserRepository
+) {
     //여러번 호출.
     fun getUser(uuid: UUID): LiveData<ServerUser> {
         return serverUserRepository.getUser(uuid)

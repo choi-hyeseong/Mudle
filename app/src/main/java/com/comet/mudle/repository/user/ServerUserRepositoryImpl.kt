@@ -17,12 +17,13 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.UUID
 
-class ServerUserRepositoryImpl : ServerUserRepository, ResponseLiveDataHolder {
+class ServerUserRepositoryImpl(
+    private val userAPI : MudleUserAPI
+) : ServerUserRepository, ResponseLiveDataHolder {
 
-    private val retrofit = DependencyUtil.retrofit
     private val serverUserLiveData : MutableLiveData<ServerUser> = MutableLiveData()
     private val responseLiveData : MutableLiveData<String> = MutableLiveData()
-    private val userAPI : MudleUserAPI by lazy { retrofit.create(MudleUserAPI::class.java) }
+
 
 
     override fun getUser(uuid : UUID): LiveData<ServerUser> {

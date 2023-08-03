@@ -1,12 +1,17 @@
 package com.comet.mudle
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.comet.mudle.callback.ActivityCallback
 import com.comet.mudle.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ActivityCallback {
+
+    private val mainViewModel : MainViewModel by viewModels()
 
     override fun switchRegister() {
         //commit을 해줘야됨
@@ -20,12 +25,15 @@ class MainActivity : AppCompatActivity(), ActivityCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        val isRegistered = viewModel.isUserExists()
-        if (isRegistered)
-        //회원가입이 된경우
-            switchMain()
-        else
-            switchRegister()
+        //단순 livedata만 리턴하더라도 최신 값 읽어서 return 해줌
+        mainViewModel.isUserExists().observe(this) { isRegistered ->
+            if (isRegistered)
+            //회원가입이 된경우
+                switchMain()
+            else
+                switchRegister()
+
+        }
+
     }
 }

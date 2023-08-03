@@ -1,15 +1,18 @@
 package com.comet.mudle.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.comet.mudle.service.LocalUserService
 import com.comet.mudle.service.ServerUserService
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(private val localUserService: LocalUserService) : ViewModel() {
 
-    private val localUserService : LocalUserService = LocalUserService(ServerUserService())
-
-    fun isUserExists() : Boolean {
-        return localUserService.isUserExists()
+    fun isUserExists() : LiveData<Boolean> {
+        return MutableLiveData(localUserService.isUserExists())
     }
 
 }

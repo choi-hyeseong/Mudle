@@ -4,6 +4,9 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
+import com.comet.mudle.repository.user.LocalUserRepository
+import com.comet.mudle.service.LocalUserService
+import com.comet.mudle.service.ServerUserService
 import com.comet.mudle.viewmodel.RegisterViewModel
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -13,38 +16,31 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.Mockito.doNothing
+import org.mockito.Mockito.mock
 
 
 class RegisterViewModelTest {
 
-    lateinit var viewModel: RegisterViewModel
-    @Mock
-    lateinit var context : Context
-    @Before
-    fun load() {
-        context = Mockito.mock(Context::class.java)
-        val preferences = Mockito.mock(SharedPreferences::class.java)
-        val editor = Mockito.mock(Editor::class.java)
-        Mockito.`when`(editor.putString(any(), any())).thenReturn(editor)
-        Mockito.`when`(context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE)).thenReturn(preferences)
-        Mockito.`when`(preferences.edit()).thenReturn(editor)
-        DependencyUtil.injectPreference(context)
-        viewModel = RegisterViewModel()
+    lateinit var userService: LocalUserService
 
+    @Before
+    fun init() {
+        userService = LocalUserService(Mockito.mock(ServerUserService::class.java), Mockito.mock(LocalUserRepository::class.java))
     }
 
     @Test
     fun testValidInput() {
+        // mock 할시 method도 mock 됨
         val username = "NewUser"
-        assertTrue(viewModel.checkValidInput(username))
+        assertTrue(userService.checkValidInput(username))
     }
 
     @Test
     fun testInvalidInput() {
         val username = "system"
-        assertFalse(viewModel.checkValidInput(username))
+        assertFalse(userService.checkValidInput(username))
         val blank = ""
-        assertFalse(viewModel.checkValidInput(blank))
+        assertFalse(userService.checkValidInput(blank))
     }
 
 

@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -26,11 +28,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = "17"
     }
 }
 
@@ -48,9 +50,15 @@ dependencies {
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:12.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "com.google.dagger:hilt-android:2.43.2"
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    //ktx 버전 안맞으면 error 발생할 수 있음
+    implementation 'androidx.activity:activity-ktx:1.5.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.0'
+    kapt "com.google.dagger:hilt-compiler:2.43.2"
+    kapt "com.google.dagger:dagger-android-processor:2.43.2"
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:5.4.0'
-    testImplementation 'org.mockito:mockito-inline:5.2.0'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:5.0.0"
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation("org.mockito:mockito-android:5.4.0")
