@@ -24,7 +24,7 @@ import com.comet.mudle.model.Music
 import com.comet.mudle.recycler.ChatAdapter
 import com.comet.mudle.recycler.ChatDecoration
 import com.comet.mudle.viewmodel.GameViewModel
-import com.comet.mudle.web.stomp.StompUseCase
+import com.comet.mudle.web.stomp.StompService
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -83,11 +83,11 @@ class GameFragment : Fragment() {
         }
 
         binding.sendButton.setOnClickListener {
-            sendMessage(viewModel.stompUseCase)
+            sendMessage(viewModel.stompService)
         }
 
         binding.messageInput.setOnKeyListener { _, _, keyEvent ->
-            if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN) sendMessage(viewModel.stompUseCase)
+            if (keyEvent.keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_DOWN) sendMessage(viewModel.stompService)
             true
         }
 
@@ -97,7 +97,7 @@ class GameFragment : Fragment() {
         }
 
         //connect
-        binding.viewModel?.let { it.stompUseCase.connect() }
+        binding.viewModel?.let { it.stompService.connect() }
 
         return binding.root
     }
@@ -152,10 +152,10 @@ class GameFragment : Fragment() {
 
     private fun initLiveData(viewModel: GameViewModel) {
         viewModel.apply {
-            stompUseCase.chatLiveData.observe(viewLifecycleOwner) { chats ->
+            stompService.chatLiveData.observe(viewLifecycleOwner) { chats ->
                 updateList(chats)
             }
-            stompUseCase.serverStatLiveData.observe(viewLifecycleOwner) { serverStatus ->
+            stompService.serverStatLiveData.observe(viewLifecycleOwner) { serverStatus ->
                 if (serverStatus) serverStatImage.setImageDrawable(
                     AppCompatResources.getDrawable(
                         requireContext(), R.drawable.server_online))
@@ -187,9 +187,9 @@ class GameFragment : Fragment() {
         }
     }
 
-    private fun sendMessage(stompUseCase: StompUseCase) {
+    private fun sendMessage(stompService: StompService) {
         val message = inputMessage.text.toString().trim()
-        stompUseCase.send(message)
+        stompService.send(message)
         inputMessage.text.clear()
     }
 

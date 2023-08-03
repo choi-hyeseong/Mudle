@@ -1,4 +1,4 @@
-package com.comet.mudle.usecase
+package com.comet.mudle.service
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,18 +8,18 @@ import com.comet.mudle.repository.user.LocalUserRepositoryImpl
 import com.comet.mudle.repository.user.dao.PrefUserDao
 import java.util.UUID
 
-class MudleLocalUserCase(private val mudleUserCase: MudleUserCase) {
+class LocalUserService(private val serverUserService: ServerUserService) {
 
     private val repository = LocalUserRepositoryImpl(PrefUserDao(DependencyUtil.preferences))
     val validLiveData = MutableLiveData<String>()
-    val responseLiveData : LiveData<String> = mudleUserCase.getResponseLiveData()
+    val responseLiveData : LiveData<String> = serverUserService.getResponseLiveData()
 
     fun register(name: String) : LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
         if (checkValidInput(name)) {
             val uuid = UUID.randomUUID()
             repository.saveUser(LocalUser(name, uuid))
-            return mudleUserCase.register(name, uuid)
+            return serverUserService.register(name, uuid)
         }
         return result
     }

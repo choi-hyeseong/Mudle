@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import com.comet.mudle.custom.ListLiveData
 import com.comet.mudle.model.Chat
 import com.comet.mudle.type.MessageType
-import com.comet.mudle.usecase.MudleLocalUserCase
-import com.comet.mudle.usecase.MudleMusicCase
-import com.comet.mudle.usecase.MudleUserCase
+import com.comet.mudle.service.LocalUserService
+import com.comet.mudle.service.MusicService
+import com.comet.mudle.service.ServerUserService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
@@ -15,8 +15,8 @@ import io.reactivex.disposables.Disposable
 import okhttp3.OkHttpClient
 import java.util.UUID
 
-class StompUseCase(localUserCase: MudleLocalUserCase, private val musicUseCase
-: MudleMusicCase, private val userCase: MudleUserCase) {
+class StompService(localUserCase: LocalUserService, private val musicUseCase
+: MusicService, private val userCase: ServerUserService) {
 
     private lateinit var connection: Disposable
     private lateinit var subscribe: Disposable

@@ -1,15 +1,15 @@
 package com.comet.mudle.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.comet.mudle.usecase.MudleLocalUserCase
-import com.comet.mudle.usecase.MudleUserCase
+import com.comet.mudle.service.LocalUserService
+import com.comet.mudle.service.ServerUserService
 
 class MainViewModel : ViewModel() {
 
-    private val mudleLocalUserCase : MudleLocalUserCase = MudleLocalUserCase(MudleUserCase())
+    private val localUserService : LocalUserService = LocalUserService(ServerUserService())
 
     fun isUserExists() : Boolean {
-        return mudleLocalUserCase.isUserExists()
+        return localUserService.isUserExists()
     }
 
 }

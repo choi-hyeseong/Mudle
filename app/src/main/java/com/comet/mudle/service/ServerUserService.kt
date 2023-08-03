@@ -1,25 +1,12 @@
-package com.comet.mudle.usecase
+package com.comet.mudle.service
 
-import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.comet.mudle.DependencyUtil
-import com.comet.mudle.model.Music
 import com.comet.mudle.model.ServerUser
 import com.comet.mudle.repository.user.ServerUserRepository
 import com.comet.mudle.repository.user.ServerUserRepositoryImpl
-import com.comet.mudle.repository.user.dao.MudleMusicAPI
-import com.comet.mudle.web.rest.dto.MusicRequestDTO
-import com.comet.mudle.web.rest.response.MusicResponseDTO
-import com.comet.mudle.web.rest.response.ObjectResponse
-import com.comet.mudle.web.rest.response.DefaultResponse
-import com.fasterxml.jackson.databind.ObjectMapper
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.UUID
 
-class MudleUserCase {
+class ServerUserService {
     //usecase
     private val serverUserRepository: ServerUserRepository = ServerUserRepositoryImpl()
 
