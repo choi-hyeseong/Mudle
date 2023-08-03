@@ -3,7 +3,6 @@ package com.comet.mudle.repository.user
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.comet.mudle.DependencyUtil
 import com.comet.mudle.model.ServerUser
 import com.comet.mudle.repository.ResponseLiveDataHolder
 

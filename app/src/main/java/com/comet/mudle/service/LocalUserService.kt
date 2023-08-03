@@ -2,7 +2,6 @@ package com.comet.mudle.service
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.comet.mudle.DependencyUtil
 import com.comet.mudle.model.LocalUser
 import com.comet.mudle.repository.ResponseLiveDataHolder
 import com.comet.mudle.repository.user.LocalUserRepository
