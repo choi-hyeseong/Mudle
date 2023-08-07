@@ -10,8 +10,8 @@ interface MusicRepository : ResponseLiveDataHolder {
 
     fun getMusic() : LiveData<Music>
 
-    fun requestMusic(uuid: UUID, music: String)  : CompletableFuture<Boolean>
+    suspend fun requestMusic(uuid: UUID, music: String)
 
-    fun renewMusic()
+    suspend fun renewMusic()
 
 }

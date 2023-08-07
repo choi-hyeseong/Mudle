@@ -52,6 +52,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "com.google.dagger:hilt-android:2.43.2"
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'com.github.skydoves:sandwich:1.3.7'
+    //1.3.8 없는데 찾을려고 하네
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
     //ktx 버전 안맞으면 error 발생할 수 있음
     implementation 'androidx.activity:activity-ktx:1.5.0'
     implementation 'androidx.fragment:fragment-ktx:1.5.0'

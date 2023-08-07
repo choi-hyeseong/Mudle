@@ -11,6 +11,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -39,7 +41,9 @@ class ServiceModule {
 
     @Provides
     @Singleton
-    fun provideStompService(localUserService: LocalUserService, serverUserService: ServerUserService, musicService: MusicService) : StompService {
-        return StompService(localUserService, serverUserService, musicService)
+    fun provideStompService(localUserService: LocalUserService, serverUserService: ServerUserService, musicService: MusicService, @NetworkModule.StompQualifier okHttpClient: OkHttpClient) : StompService {
+        return StompService(localUserService, serverUserService, musicService, okHttpClient)
     }
+
+
 }

@@ -1,7 +1,15 @@
 package com.comet.mudle.module
 
+import android.util.Log
+import com.comet.mudle.LOG
 import com.comet.mudle.repository.user.dao.MudleMusicAPI
 import com.comet.mudle.repository.user.dao.MudleUserAPI
+import com.comet.mudle.service.LocalUserService
+import com.comet.mudle.service.MusicService
+import com.comet.mudle.service.ServerUserService
+import com.comet.mudle.web.stomp.StompService
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +20,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 const val PREFERENCE = "USER"
@@ -21,19 +30,40 @@ const val URL: String = "http://192.168.219.106:8080"
 @InstallIn(SingletonComponent::class) //application 종료시까지.
 class NetworkModule {
 
+    //모듈에 annotation을 넣어야 되는구나..
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class RestQualifier
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class StompQualifier
+
 
     @Provides
     @Singleton
-    fun provideRetrofitClient(okHttpClient: OkHttpClient): Retrofit {
+    fun provideRetrofitClient(@RestQualifier okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder().baseUrl(URL)
             .addConverterFactory(GsonConverterFactory.create()).client(
                 okHttpClient
-            ).build()
+            )
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
+            .build()
     }
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    @RestQualifier
+    fun provideRESTOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder().connectTimeout(2, TimeUnit.SECONDS).build()
+        //아이고.. 다른 서비스에서 get요청 하던거 response자너..
+    }
+
+    @Provides
+    @Singleton
+    @StompQualifier
+    fun provideSTOMPOkHttpClient() : OkHttpClient {
+        //얘는 timeout이 뜰때마다 reconnect를 시도하게 구성한거라, 짧게 잡아야함ㅁㄴ
         return OkHttpClient.Builder().connectTimeout(3, TimeUnit.SECONDS).build()
     }
 
@@ -48,4 +78,5 @@ class NetworkModule {
     fun provideUserAPI(retrofit: Retrofit) : MudleUserAPI {
         return retrofit.create(MudleUserAPI::class.java)
     }
+
 }

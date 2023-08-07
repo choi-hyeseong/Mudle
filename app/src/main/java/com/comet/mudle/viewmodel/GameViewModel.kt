@@ -12,6 +12,9 @@ import com.comet.mudle.service.MusicService
 import com.comet.mudle.service.ServerUserService
 import com.comet.mudle.web.stomp.StompService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 //provide 계열엔 inject 안넣어도 됨
@@ -29,12 +32,24 @@ class GameViewModel @Inject constructor(serverUserService: ServerUserService,
     val musicResponseLiveData: LiveData<String> = musicService.getResponseLiveData()
     val chatLiveData: ListLiveData<Chat> = stompService.chatLiveData
     val serverStatLiveData: LiveData<Boolean> = stompService.serverStatLiveData
+
+    init {
+        //초기화시 connect
+        connect()
+    }
+
     fun request(url: String) {
-        musicService.request(user.uuid, url)
+        if (url.isNotEmpty()) {
+            CoroutineScope(Dispatchers.IO).launch {
+                musicService.request(user.uuid, url)
+            }
+        }
     }
 
     fun renewMusic() {
-        musicService.renewMusic()
+        CoroutineScope(Dispatchers.IO).launch {
+            musicService.renewMusic()
+        }
     }
 
     fun sendMessage(message: String) {

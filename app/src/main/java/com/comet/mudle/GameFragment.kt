@@ -71,6 +71,7 @@ class GameFragment : Fragment() {
         binding.viewModel = viewModel
 
         // Youtube init
+
         initYoutube(binding.youtube)
 
 
@@ -95,9 +96,6 @@ class GameFragment : Fragment() {
             addItemDecoration(ChatDecoration())
             setHasFixedSize(true) //recycler view 크기는 고정, 비싸지 않게
         }
-
-        //connect
-        binding.viewModel?.let { it.connect() }
 
         return binding.root
     }
@@ -142,7 +140,7 @@ class GameFragment : Fragment() {
 
                 override fun onStateChange(youTubePlayer: YouTubePlayer,
                                            state: PlayerConstants.PlayerState) {
-                    Log.i("asdf", state.toString())
+                    Log.i(LOG, state.toString())
                     if (state == PlayerConstants.PlayerState.ENDED) playStatusText.text = "대기중"
                     else if (state == PlayerConstants.PlayerState.PLAYING) playStatusText.text = "재생중"
                 }
@@ -180,7 +178,7 @@ class GameFragment : Fragment() {
 
             //user observe
             userLiveData.observe(viewLifecycleOwner) { user ->
-                Log.w("adsf", "call user update")
+                Log.w(LOG, "call user update")
                 //getString format 사용하기
                 coinText.text = getString(R.string.coin_format, user.coin)
             }
@@ -202,7 +200,7 @@ class GameFragment : Fragment() {
     }
 
     private fun loadVideo(music: Music) {
-        Log.i("log"," ${music.currentTime}")
+        Log.i(LOG," ${music.currentTime}")
         if (::player.isInitialized)
             player.loadVideo(
                 music.link,

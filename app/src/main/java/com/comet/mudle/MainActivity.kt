@@ -8,6 +8,7 @@ import com.comet.mudle.callback.ActivityCallback
 import com.comet.mudle.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+const val LOG = "MUDLE_LOG"
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ActivityCallback {
 

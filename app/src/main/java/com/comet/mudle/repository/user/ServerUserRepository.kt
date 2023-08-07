@@ -12,6 +12,6 @@ interface ServerUserRepository : ResponseLiveDataHolder{
     fun register(name : String, uuid: UUID) : LiveData<Boolean>
 
     //기존 LiveData의 갱신을 요청
-    fun renewUser(uuid: UUID)
+    suspend fun renewUser(uuid: UUID)
 
 }

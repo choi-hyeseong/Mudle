@@ -24,7 +24,7 @@ class ServerUserService(
         return serverUserRepository.getResponseLiveData()
     }
 
-    fun renewUser(uuid : UUID) {
+    suspend fun renewUser(uuid : UUID) {
         serverUserRepository.renewUser(uuid)
     }
 
