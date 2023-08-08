@@ -32,7 +32,9 @@ kotlin Coroutines, hilt, STOMP (via websocket), retrofit (rest), MVVM
 </br>신청된 음악은 큐에 저장되어 있다 일정 주기로 하나씩 재생이 되며, 이때 채팅으로 음악의 제목을 맞추면 코인을 흭득 할 수 있습니다.
 </br>음악 신청은 유튜브 id를 전송하면 서버에서 제목을 파싱 후 저장합니다. (url에서 watch?v={id})
 
-##### 3-1. Detail
+### 3-1. Detail
+![화면 캡처 2023-08-08 105053](https://github.com/choi-hyeseong/Mudle/assets/114974288/8092664a-ab13-4d05-8d42-7fb711d883ac)
+
 처음, 회원가입시 VM에서 입력값을 검증한뒤 통과하지 못했을경우 LiveData에 사유를 작성합니다. 그리고 검증을 통과했을시 서버에 register POST요청을 넣어 회원가입을 진행합니다.
 이후 STOMP 프로토콜이 연결되어 RecyclerView에 채팅값을 추가하고 보여줍니다. (이는 ListLiveData 구현체를 통해 관리됩니다.)
 서버는 정기적으로 STOMP를 통해 스케줄링된 음악이 있다고 클라이언트에게 REQUEST요청을 보냅니다.
