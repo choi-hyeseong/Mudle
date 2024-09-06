@@ -25,8 +25,7 @@ class ServerUserRepository(private val userAPI: MudleUserAPI) : UserRepository {
     override suspend fun getUser(uuid: UUID): ApiResponse<ObjectResponse<UserResponseDTO>> {
         return userAPI.getUser(uuid)
     }
-
-    //suspend로 바꾸고 livedata 리턴해도 현재방식이랑 다를건 없음.
+    
     override suspend fun register(name: String, uuid: UUID): ApiResponse<DefaultResponse> {
         return userAPI.register(UserRequestDTO(name, uuid))
     }
