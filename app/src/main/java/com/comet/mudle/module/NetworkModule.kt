@@ -1,29 +1,19 @@
 package com.comet.mudle.module
 
-import android.util.Log
-import com.comet.mudle.LOG
 import com.comet.mudle.repository.user.dao.MudleMusicAPI
 import com.comet.mudle.repository.user.dao.MudleUserAPI
-import com.comet.mudle.service.LocalUserService
-import com.comet.mudle.service.MusicService
-import com.comet.mudle.service.ServerUserService
-import com.comet.mudle.web.stomp.StompService
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-const val PREFERENCE = "USER"
 const val URL: String = "http://192.168.219.106:8080"
 
 @Module

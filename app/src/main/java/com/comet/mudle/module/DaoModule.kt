@@ -2,8 +2,7 @@ package com.comet.mudle.module
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.comet.mudle.repository.user.dao.PrefUserDao
-import com.comet.mudle.repository.user.dao.UserDao
+import com.comet.mudle.preference.SharedPreferencesStorage
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -18,13 +17,7 @@ class DaoModule {
 
     @Provides
     @Singleton
-    fun provideUserDao(preferences: SharedPreferences) : UserDao {
-        return PrefUserDao(preferences)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSharedPreference(@ApplicationContext context: Context): SharedPreferences {
-        return context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE)
+    fun provideSharedPreference(@ApplicationContext context: Context): SharedPreferencesStorage {
+        return SharedPreferencesStorage(context)
     }
 }

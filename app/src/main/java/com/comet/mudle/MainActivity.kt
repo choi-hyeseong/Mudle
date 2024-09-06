@@ -14,26 +14,29 @@ class MainActivity : AppCompatActivity(), ActivityCallback {
 
     private val mainViewModel : MainViewModel by viewModels()
 
+    // oncreate 2번 호출 문제 해결
     override fun switchRegister() {
         //commit을 해줘야됨
-        supportFragmentManager.beginTransaction().replace(R.id.frame, RegisterFragment()).commit()
+        val fragment = supportFragmentManager.findFragmentById(R.id.frame) as? RegisterFragment?
+        supportFragmentManager.beginTransaction().replace(R.id.frame, fragment ?: RegisterFragment()).commit()
     }
 
     override fun switchMain() {
-        supportFragmentManager.beginTransaction().replace(R.id.frame, GameFragment()).commit()
+        val fragment = supportFragmentManager.findFragmentById(R.id.frame) as? GameFragment?
+        supportFragmentManager.beginTransaction().replace(R.id.frame, fragment ?: GameFragment()).commit()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //단순 livedata만 리턴하더라도 최신 값 읽어서 return 해줌
-        mainViewModel.isUserExists().observe(this) { isRegistered ->
+
+        mainViewModel.userRegistrationLiveData.observe(this) { isRegistered ->
             if (isRegistered)
             //회원가입이 된경우
                 switchMain()
             else
                 switchRegister()
-
         }
 
     }

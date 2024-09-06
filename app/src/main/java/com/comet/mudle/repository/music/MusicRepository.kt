@@ -1,17 +1,15 @@
 package com.comet.mudle.repository.music
 
-import androidx.lifecycle.LiveData
-import com.comet.mudle.model.Music
-import com.comet.mudle.repository.ResponseLiveDataHolder
+import com.comet.mudle.web.rest.response.DefaultResponse
+import com.comet.mudle.web.rest.dto.MusicResponseDTO
+import com.comet.mudle.web.rest.response.ObjectResponse
+import com.skydoves.sandwich.ApiResponse
 import java.util.UUID
-import java.util.concurrent.CompletableFuture
 
-interface MusicRepository : ResponseLiveDataHolder {
+interface MusicRepository {
 
-    fun getMusic() : LiveData<Music>
+    suspend fun getMusic() : ApiResponse<ObjectResponse<MusicResponseDTO>>
 
-    suspend fun requestMusic(uuid: UUID, music: String)
-
-    suspend fun renewMusic()
+    suspend fun requestMusic(uuid: UUID, music: String) : ApiResponse<DefaultResponse>
 
 }

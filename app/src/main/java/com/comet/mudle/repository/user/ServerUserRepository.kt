@@ -1,17 +1,33 @@
 package com.comet.mudle.repository.user
 
+import android.util.Log
 import androidx.lifecycle.LiveData
-import com.comet.mudle.model.ServerUser
-import com.comet.mudle.repository.ResponseLiveDataHolder
+import androidx.lifecycle.MutableLiveData
+import com.comet.mudle.LOG
+import com.comet.mudle.model.User
+
+import com.comet.mudle.repository.user.dao.MudleUserAPI
+import com.comet.mudle.web.rest.dto.UserRequestDTO
+import com.comet.mudle.web.rest.dto.UserResponseDTO
+import com.comet.mudle.web.rest.response.DefaultResponse
+import com.comet.mudle.web.rest.response.ObjectResponse
+import com.skydoves.sandwich.ApiResponse
+import com.skydoves.sandwich.StatusCode
+import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onSuccess
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.UUID
 
-interface ServerUserRepository : ResponseLiveDataHolder{
+class ServerUserRepository(private val userAPI: MudleUserAPI) : UserRepository {
 
-    fun getUser(uuid: UUID) : LiveData<ServerUser> //observe 가능하게
+    override suspend fun getUser(uuid: UUID): ApiResponse<ObjectResponse<UserResponseDTO>> {
+        return userAPI.getUser(uuid)
+    }
 
-    fun register(name : String, uuid: UUID) : LiveData<Boolean>
-
-    //기존 LiveData의 갱신을 요청
-    suspend fun renewUser(uuid: UUID)
-
+    //suspend로 바꾸고 livedata 리턴해도 현재방식이랑 다를건 없음.
+    override suspend fun register(name: String, uuid: UUID): ApiResponse<DefaultResponse> {
+        return userAPI.register(UserRequestDTO(name, uuid))
+    }
 }

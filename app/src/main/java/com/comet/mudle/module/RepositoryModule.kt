@@ -1,20 +1,20 @@
 package com.comet.mudle.module
 
+import com.comet.mudle.preference.SharedPreferencesStorage
 import com.comet.mudle.repository.music.MusicRepository
-import com.comet.mudle.repository.music.MusicRepositoryImpl
-import com.comet.mudle.repository.user.LocalUserRepository
-import com.comet.mudle.repository.user.LocalUserRepositoryImpl
+import com.comet.mudle.repository.music.ServerMusicRepository
+import com.comet.mudle.repository.stomp.StompRepository
+import com.comet.mudle.repository.user.LocalUUIDRepository
+import com.comet.mudle.repository.user.PreferenceUUIDRepository
+import com.comet.mudle.repository.user.UserRepository
 import com.comet.mudle.repository.user.ServerUserRepository
-import com.comet.mudle.repository.user.ServerUserRepositoryImpl
 import com.comet.mudle.repository.user.dao.MudleMusicAPI
 import com.comet.mudle.repository.user.dao.MudleUserAPI
-import com.comet.mudle.repository.user.dao.UserDao
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 @Module
@@ -26,18 +26,25 @@ class RepositoryModule {
     @Singleton
     //qualifier로 다른 impl이랑 구분가능
     fun provideMusicRepository(musicAPI: MudleMusicAPI) : MusicRepository {
-        return MusicRepositoryImpl(musicAPI)
+        return ServerMusicRepository(musicAPI)
     }
 
     @Provides
     @Singleton
-    fun provideLocalUserRepository(userDao: UserDao) : LocalUserRepository {
-        return LocalUserRepositoryImpl(userDao)
+    fun provideUUIDRepository(preferencesStorage: SharedPreferencesStorage) : LocalUUIDRepository {
+        return PreferenceUUIDRepository(preferencesStorage)
     }
 
     @Provides
     @Singleton
-    fun provideServerUserRepository(userAPI: MudleUserAPI) : ServerUserRepository {
-        return ServerUserRepositoryImpl(userAPI)
+    fun provideServerUserRepository(userAPI: MudleUserAPI) : UserRepository {
+        return ServerUserRepository(userAPI)
     }
+
+    @Provides
+    @Singleton
+    fun provideStompRepository( @NetworkModule.StompQualifier okHttpClient: OkHttpClient) : StompRepository {
+        return StompRepository(okHttpClient)
+    }
+
 }

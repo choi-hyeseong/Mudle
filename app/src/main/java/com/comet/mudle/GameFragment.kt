@@ -16,7 +16,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.comet.mudle.databinding.GameMainBinding
@@ -50,6 +49,7 @@ class GameFragment : Fragment() {
     private var currentMusic: Music? = null
 
 
+    //https://nerdymint.tistory.com/6 fragment 2번 생성되어 connect 요청이 2번씩이나 들어감.. -> 작동안함 해당 문제 해결
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -97,12 +97,19 @@ class GameFragment : Fragment() {
             setHasFixedSize(true) //recycler view 크기는 고정, 비싸지 않게
         }
 
+        viewModel.connect()
+
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.renewMusic()
+        viewModel.loadMusic()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.disconnect()
     }
 
     private fun setRequestButtonListener(viewModel : GameViewModel) {
@@ -153,7 +160,7 @@ class GameFragment : Fragment() {
             chatLiveData.observe(viewLifecycleOwner) { chats ->
                 updateList(chats)
             }
-            serverStatLiveData.observe(viewLifecycleOwner) { serverStatus ->
+            serverStatusLiveData.observe(viewLifecycleOwner) { serverStatus ->
                 if (serverStatus) serverStatImage.setImageDrawable(
                     AppCompatResources.getDrawable(
                         requireContext(), R.drawable.server_online))
@@ -168,11 +175,11 @@ class GameFragment : Fragment() {
                 loadVideo(music)
             }
 
-            musicResponseLiveData.observe(viewLifecycleOwner) { response ->
+            errorLiveData.observe(viewLifecycleOwner) { response ->
                 Toast.makeText(requireContext(), response, Toast.LENGTH_SHORT).show()
             }
 
-            userResponseLiveData.observe(viewLifecycleOwner) { response ->
+            resultLiveData.observe(viewLifecycleOwner) { response ->
                 Toast.makeText(requireContext(), response, Toast.LENGTH_SHORT).show()
             }
 
