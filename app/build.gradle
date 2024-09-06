@@ -58,6 +58,7 @@ dependencies {
     //ktx 버전 안맞으면 error 발생할 수 있음
     implementation 'androidx.activity:activity-ktx:1.5.0'
     implementation 'androidx.fragment:fragment-ktx:1.5.0'
+    implementation 'androidx.core:core-ktx:1.5.0'
     kapt "com.google.dagger:hilt-compiler:2.43.2"
     kapt "com.google.dagger:dagger-android-processor:2.43.2"
     testImplementation 'junit:junit:4.13.2'
