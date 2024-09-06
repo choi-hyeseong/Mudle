@@ -122,13 +122,6 @@ class GameViewModel @Inject constructor(private val stompRepository: StompReposi
 
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        CoroutineScope(Dispatchers.IO).launch {
-            stompRepository.disconnect()
-        }
-    }
-
     override fun onOpen() {
         // stomp 연결시 유저 정보 및 음악 정보 로드
         loadUser()
