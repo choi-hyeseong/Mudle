@@ -29,6 +29,8 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import dagger.hilt.android.AndroidEntryPoint
+import me.bogerchan.niervisualizer.NierVisualizerManager
+import me.bogerchan.niervisualizer.renderer.circle.CircleBarRenderer
 
 @AndroidEntryPoint
 class GameFragment : Fragment() {
@@ -44,6 +46,7 @@ class GameFragment : Fragment() {
     private lateinit var playStatusText: TextView
     private lateinit var serverStatImage : ImageView
     private lateinit var coinText : TextView
+    private lateinit var visualizer : NierVisualizerManager
     //viewmodel init
     private val viewModel: GameViewModel by viewModels()
     private var currentMusic: Music? = null
@@ -75,8 +78,6 @@ class GameFragment : Fragment() {
         initYoutube(binding.youtube)
 
 
-        //background image view init
-        Glide.with(this).load(R.drawable.background).fitCenter().into(binding.background)
 
         //button init
         binding.request.setOnClickListener {
@@ -97,6 +98,14 @@ class GameFragment : Fragment() {
             setHasFixedSize(true) //recycler view 크기는 고정, 비싸지 않게
         }
 
+        visualizer = NierVisualizerManager() //visualizer creation
+        val state = visualizer.init(0) //system audio session init
+        if (state != NierVisualizerManager.SUCCESS)
+            Toast.makeText(requireContext(), R.string.visualizer_init_error, Toast.LENGTH_SHORT).show()
+        else
+            //start
+            visualizer.start(binding.visualizer, arrayOf(CircleBarRenderer()))
+
         viewModel.connect()
 
         return binding.root
@@ -110,6 +119,7 @@ class GameFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         viewModel.disconnect()
+        visualizer.release()
     }
 
     private fun setRequestButtonListener(viewModel : GameViewModel) {

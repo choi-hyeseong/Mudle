@@ -8,4 +8,7 @@
     <string name="request_deny">취소</string>
     <string name="load">로딩중..</string>
     <string name="coin_format">%1$d COIN</string>
+    <string name="permission_check">펄미션을 허용해주세요.</string>
+    <string name="permission_required">펄미션을 허용하셔야 앱 사용이 가능합니다.</string>
+    <string name="visualizer_init_error">visualizer 초기화에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.</string>
 </resources>

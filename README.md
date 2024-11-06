@@ -140,3 +140,8 @@ hilt는 매우 편리하고 좋지만 설정하기 까다로웠습니다. Module
 ### 2024-09-06
 MVVM 패턴에 맞게 대다수 클래스 리팩토링 진행 완료 - 잘못된 DAO / Repository 사용 해결 및 Stomp Repository로 이동 (Stateful Repository)
 유스케이스 도입 고려했으나, 일단은 레포지토리에서 접근하는걸로 했으며, 추후 유스케이스 적용해도 괜찮을듯
+
+### 2024-11-06
+![GIF 2024-11-06 오후 7-45-53](https://github.com/user-attachments/assets/46c22458-adfc-4520-9897-52f8203a7704)
+위 8-5에 따르면, 오디오 세션 ID를 가져오지 못해 이퀄라이저를 표현하지 못했다고 명시해두었지만. 확인해본 결과 Visualizer에 sessionId를 0으로 지정해두면 시스템의 기본 출력을 받아 비주얼화해준다고 명시되어 있다.
+적용해본결과 잘 작동한다!! (Nier-Visualizer 라이브러리 사용)
