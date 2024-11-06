@@ -35,8 +35,7 @@ class StompRepository(private val okHttpClient: OkHttpClient) : NetworkRepositor
 
     private fun connectServer(stompClient: StompClient, callback: MessageCallback) {
         connection = stompClient.connect().subscribe {
-            //connection type
-
+            //connection type - 얘도 구독중이기 때문에 event가 단발성으로 호출되는게 아님 - Close 되도 onClose 호출 가능!
             when (it.type) {
                 Event.Type.OPENED -> {
                     callback.onOpen()
