@@ -15,6 +15,10 @@ const val LOG = "MUDLE_LOG"
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ActivityCallback {
 
+    // 이거 activityResultLauncher 써서 따로 클래스 만들어서 핸들링 하는것도 좋을듯
+    /*
+    PermissionHandler.execute().onSuccess{}.onFailure{} 이런 느낌의 체이닝으로 ㅇㅇ..
+     */
     private val requiredPermissions : List<String> = listOf("android.permission.RECORD_AUDIO", "android.permission.MODIFY_AUDIO_SETTINGS") //필요한 펄미션
     private val code = 200
     private val mainViewModel : MainViewModel by viewModels()
