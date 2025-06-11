@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-const val URL: String = "http://192.168.219.106:8080"
+const val URL: String = "http://0.tcp.jp.ngrok.io:16507"
 
 @Module
 @InstallIn(SingletonComponent::class) //application 종료시까지.
