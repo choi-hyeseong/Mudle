@@ -5,7 +5,7 @@
 ![GIF 2023-08-08 오전 10-32-15](https://github.com/choi-hyeseong/Auction-Finder/assets/114974288/add57dfe-e182-4048-a34e-b28ed60012ee)
 
 ### 시연 영상 :
-https://www.youtube.com/watch?v=5GbyHquzqPk
+[https://www.youtube.com/watch?v=5GbyHquzqPk](https://www.youtube.com/watch?v=Vw0iQ1FnH_E)
 
 ##### 사용된 기술 스택 : 
 <img src="https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white"> <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white"> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=SpringBoot&logoColor=white"> 
