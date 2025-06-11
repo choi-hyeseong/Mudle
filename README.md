@@ -4,6 +4,9 @@
 
 ![GIF 2023-08-08 오전 10-32-15](https://github.com/choi-hyeseong/Auction-Finder/assets/114974288/add57dfe-e182-4048-a34e-b28ed60012ee)
 
+### 시연 영상 :
+https://www.youtube.com/watch?v=5GbyHquzqPk
+
 ##### 사용된 기술 스택 : 
 <img src="https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white"> <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white"> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=SpringBoot&logoColor=white"> 
 ##### 그외 :
@@ -143,5 +146,6 @@ MVVM 패턴에 맞게 대다수 클래스 리팩토링 진행 완료 - 잘못된
 
 ### 2024-11-06
 ![GIF 2024-11-06 오후 7-45-53](https://github.com/user-attachments/assets/46c22458-adfc-4520-9897-52f8203a7704)
+
 위 8-5에 따르면, 오디오 세션 ID를 가져오지 못해 이퀄라이저를 표현하지 못했다고 명시해두었지만. 확인해본 결과 Visualizer에 sessionId를 0으로 지정해두면 시스템의 기본 출력을 받아 비주얼화해준다고 명시되어 있다.
 적용해본결과 잘 작동한다!! (Nier-Visualizer 라이브러리 사용)
