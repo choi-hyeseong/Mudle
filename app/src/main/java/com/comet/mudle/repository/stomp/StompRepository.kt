@@ -20,7 +20,7 @@ import java.util.UUID
 
 class StompRepository(private val okHttpClient: OkHttpClient) : NetworkRepository {
 
-    private val URL = "ws://192.168.219.106:8080/ws"
+    private val URL = "ws://0.tcp.jp.ngrok.io:16507/ws"
     private val INTERVAL_MILLIS = 1000L
 
     private var connection: Disposable? = null

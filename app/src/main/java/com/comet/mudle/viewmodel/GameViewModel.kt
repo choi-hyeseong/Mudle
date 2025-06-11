@@ -135,13 +135,20 @@ class GameViewModel @Inject constructor(private val stompRepository: StompReposi
     }
 
     override fun onMessage(chat: Chat) {
-        if (chat.type == MessageType.REQUEST) //새로운 음악 시작시
-            loadMusic()
-        else if (chat.type == MessageType.UPDATE && user != null && user!!.uuid.toString() == chat.message)
+        when (chat.type) {
+            //새로운 음악 시작시
+            MessageType.REQUEST-> loadMusic()
+            //UUID Coin Update시
+            MessageType.UPDATE -> handleUpdate(chat.message)
+            else -> chatLiveData.add(chat)
+        }
+    }
+
+    private fun handleUpdate(uuid : String) {
+        if (user != null && user!!.uuid.toString() == uuid)
             loadUser()
         else
-            chatLiveData.add(chat)
-
+            return
     }
 
 }
